@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#14100c">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-512.png">
+<title>Enochian Grimoire Companion</title>
+<style>
+:root{--bg:#14100c;--panel:#1e180f;--panel2:#261d11;--gold:#c9a227;--gold2:#e8c95a;--ink:#e8ddc0;--mut:#a8946a;--red:#a33327;--line:#4a3a1e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.55}
+header{padding:18px 14px 10px;text-align:center;border-bottom:3px double var(--gold)}
+header h1{margin:0;font-size:1.65em;letter-spacing:.04em;color:var(--gold2);font-variant:small-caps}
+header p{margin:6px 0 0;color:var(--mut);font-style:italic}
+nav{display:flex;gap:6px;overflow-x:auto;padding:10px 8px;background:#0f0c08;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+nav button{flex:0 0 auto;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:8px 12px;font-family:inherit;font-size:.95em;cursor:pointer}
+nav button.on{background:var(--gold);color:#1a1206;font-weight:bold}
+main{max-width:960px;margin:0 auto;padding:14px}
+section{display:none}
+section.on{display:block}
+h2{color:var(--gold2);border-bottom:1px solid var(--line);padding-bottom:4px;font-variant:small-caps}
+h3{color:var(--gold);margin-top:1.4em}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:10px 0}
+.card h3{margin-top:0}
+.mut{color:var(--mut);font-size:.92em}
+.src{font-size:.85em;color:var(--mut);border-left:3px solid var(--gold);padding-left:8px;margin:10px 0}
+.warn{background:#2a1210;border:1px solid var(--red);border-radius:6px;padding:12px 14px;margin:10px 0}
+.warn b{color:#e0705f}
+table{border-collapse:collapse;width:100%;margin:8px 0;font-size:.94em}
+th,td{border:1px solid var(--line);padding:5px 7px;text-align:left;vertical-align:top}
+th{background:var(--panel2);color:var(--gold2)}
+input,select,textarea,button{font-family:inherit;font-size:1em}
+input[type=text],input[type=search],input[type=date],select,textarea{background:#0f0c08;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:7px 9px;width:100%}
+button.action{background:var(--gold);color:#1a1206;border:none;border-radius:4px;padding:9px 14px;font-weight:bold;cursor:pointer;margin:4px 0}
+button.action:hover{background:var(--gold2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:4px}
+.cell{background:#0f0c08;border:1px solid var(--line);border-radius:3px;padding:7px 2px;text-align:center;font-weight:bold;cursor:pointer;user-select:none}
+.cell:hover{border-color:var(--gold)}
+.cell.sel{background:var(--gold);color:#1a1206}
+.orn{text-align:center;color:var(--gold);letter-spacing:.5em;margin:14px 0}
+details{margin:8px 0}
+summary{cursor:pointer;color:var(--gold2);font-weight:bold}
+.klist{columns:2;column-gap:18px}
+.klist li{margin-bottom:6px}
+.small{font-size:.88em}
+.tag{display:inline-block;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:1px 8px;font-size:.82em;margin:0 3px 3px 0}
+canvas{max-width:100%;background:#0f0c08;border:1px solid var(--line);border-radius:4px}
+@media(max-width:600px){header h1{font-size:1.3em}.klist{columns:1}}
+@font-face{font-family:'EnochianGlumbosch';src:url(data:font/ttf;base64,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) format('truetype');font-display:swap}
+.enoch-glyph{font-family:'EnochianGlumbosch',serif;font-size:64px;line-height:1.1;color:#c9a227;background:#0f0c08;border:1px solid var(--line);border-radius:4px;display:inline-block;padding:8px 16px;margin:4px 2px}
+.glyph-missing{color:var(--mut);font-style:italic;padding:10px 0}
+.gt-view button{background:#0f0c08;color:var(--ink);border:1px solid var(--line);border-radius:4px;padding:7px 12px;cursor:pointer;margin-right:4px}
+.gt-view button.sel{background:var(--gold);color:#1a1206;font-weight:bold;border-color:var(--gold)}
+.enoch-sm{font-family:'EnochianGlumbosch',serif;font-size:1.45em;line-height:1;color:#c9a227}
+.gt-both{display:inline-block;text-align:center;line-height:1.15}
+.gt-both .enoch-sm{display:block}
+.gt-both svg{display:block;margin:0 auto}
+.gt-both small{display:block;font-size:.72em;color:var(--ink);line-height:1.2}
+</style>
+</head>
+<body>
+<header>
+<h1>Enochian Grimoire Companion</h1>
+<p>A working reference from Athena Wallinder's <i>Enochian Grimoire</i> (2nd ed., 2026)</p>
+</header>
+<nav id="tabbar"></nav>
+<main>
+<!-- ABOUT -->
+<section id="tab-about">
+<h2>About this app — read first</h2>
+<div class="card">
+<p>This companion is the at-hand reference to <i>Enochian Grimoire</i> by Athena Wallinder (2nd edition, 2026). It holds the tables, names, calculators, and checklists a practitioner wants on their phone. The teaching itself stays in the book.</p>
+<p><b>Version 1 honesty note.</b> Transcriptions in v1 are as-is from the book and from Casaubon 1659, <b>unproofread</b>. The book's image-only tables (the 91 Parts, the squares) were transcribed from page images; uncertain readings are flagged <b>[?]</b>. Alphabet glyphs come from the Glumbosch Enochian font (OFL), verified against Athena's reference chart; Ged and Tal are traced from the chart. Athena's proofread readings and her own versions of the Calls come in later versions. Nothing here was copied from any modern translation or edition.</p>
+<p><b>Sources.</b> Every section names its source: book section, or Casaubon 1659 where used. Full texts of Calls 1–18 are <b>not</b> in v1 — they are not in Casaubon (see Keys tab). Cacodemons are not in the free v1 — see the Cacodemons tab.</p>
+<p><b>§18 note.</b> The book asks readers to keep silent about what is taught in this grimoire. This app covers reference material the author has chosen to include; the advanced Part 3 material stays in the book.</p>
+</div>
+<div class="card"><h3>How to use it</h3>
+<ul>
+<li><b>Great Table</b> — the grid, the derivation rules, and the directional-layout dispute, labelled.</li>
+<li><b>Bonorum</b> — the 7 Kings + 7 Princes, weekday ruler, Governor-of-the-Hour.</li>
+<li><b>Alphabet</b> — the 21 letters, glyph, name, sound.</li>
+<li><b>Keys</b> — the 19 Calls: correspondence table, 19th Call in full, first words of all 19.</li>
+<li><b>Aethyres</b> — the 30 Aethyres, pacing rules, travel journal.</li>
+<li><b>91 Parts</b> — the author's own geographic mapping: part, governor, direction, tribe/sign, place.</li>
+<li><b>Squares</b> — the 7 Bonorum squares: purpose, material, method, grid.</li>
+<li><b>Temple</b> — build checklist.</li>
+<li><b>Workings</b> — 19-day program planner and sigil tracer.</li>
+<li><b>Finder</b> — which entity to call for what.</li>
+<li><b>Cacodemons</b> — placeholder for a later paid version.</li>
+</ul></div>
+</section>
+
+<!-- GREAT TABLE -->
+<section id="tab-table">
+<h2>The Great Table</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §1–2. Grid as printed in the book.</div>
+<div id="gt-layout" class="card"></div>
+<div class="card"><h3>The grid</h3><p class="mut">Tap a cell to see its row/column and which quarter it belongs to. The Table is read in four quarters, each ruled by its King, Seniors, and Angels.</p><p class="gt-view" id="gt-view"><button data-view="english" class="sel" onclick="setGtView('english')">English</button><button data-view="enochian" onclick="setGtView('enochian')">Enochian</button><button data-view="both" onclick="setGtView('both')">Both</button></p><p class="mut">English shows the grid as printed, capitals as in the book. Enochian renders each letter in its Enochian glyph — Enochian has no upper/lower case, so capitals are shown as their letter. Ged (G) and Tal (M) are traced from the reference chart; all other glyphs are the Glumbosch font. Both shows glyph + English letter.</p><div id="gt-grid" class="grid"></div></div>
+<div id="gt-rules" class="card"></div>
+</section>
+
+<!-- BONORUM -->
+<section id="tab-bonorum">
+<h2>Bonorum — Kings &amp; Princes</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §8 (entries), §13 (derivation, Governors of the Hours).</div>
+<div class="card"><h3>Today's rulers</h3><div id="today-ruler"></div>
+<p><label>Pick a day to see its rulers: <select id="day-pick"></select></label></p><div id="day-ruler"></div></div>
+<div class="card"><h3>Governor of the Hour</h3><p>From the day's minister name, rotated letter by letter (book §13). Enter a date and time:</p>
+<p><label>Date <input type="date" id="gov-date"></label></p>
+<p><label>Time <input type="time" id="gov-time"></label></p>
+<p><button class="action" onclick="calcGovernor()">Find the Governor</button></p><div id="gov-out"></div></div>
+<div class="card"><h3>The 49 names — how they are derived</h3><div id="bonorum-deriv"></div></div>
+<div class="card"><h3>Search the entries</h3><input type="search" id="bon-search" placeholder="Search Kings, Princes, ministers…" oninput="renderBonorum()"></div>
+<div id="bonorum-list"></div>
+</section>
+
+<!-- ALPHABET -->
+<section id="tab-alpha">
+<h2>The Enochian Alphabet — 21 letters</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §5 for the table; glyphs from the Enochian font by Glumbosch (OFL), verified against Athena's reference chart. Ged and Tal traced from the chart. Ch/Ph/Sh/Th glyphs pending. The book rejects invented correspondences and the 22nd letter.</div>
+<div id="alpha-list"></div>
+<div id="alpha-rules" class="card"></div>
+<details class="card"><summary>Enochian font license (OFL-1.1)</summary><p>Enochian font — Copyright (c) Glumbosch. This Font Software is licensed under the SIL Open Font License, Version 1.1. No Reserved Font Name is declared.</p><pre style="white-space:pre-wrap;font-size:.85em">SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
+
+PREAMBLE
+The goals of the Open Font License (OFL) are to stimulate worldwide development of collaborative font projects, to support the font creation efforts of academic and linguistic communities, and to provide a free and open framework in which fonts may be shared and improved in partnership with others.
+The OFL allows the licensed fonts to be used, studied, modified and redistributed freely as long as they are not sold by themselves. The fonts, including any derivative works, can be bundled, embedded, redistributed and/or sold with any software provided that any reserved names are not used by derivative works. The fonts and derivatives, however, cannot be released under any other type of license. The requirement for fonts to remain under this license does not apply to any document created using the fonts or their derivatives.
+
+DEFINITIONS
+&quot;Font Software&quot; refers to the set of files released by the Copyright Holder(s) under this license and clearly marked as such. This may include source files, build scripts and documentation.
+&quot;Reserved Font Name&quot; refers to any names specified as such after the copyright statement(s).
+&quot;Original Version&quot; refers to the collection of Font Software components as distributed by the Copyright Holder(s).
+&quot;Modified Version&quot; refers to any derivative made by adding to, deleting, or substituting — in part or in whole — any of the components of the Original Version, by changing formats or by porting the Font Software to a new environment.
+&quot;Author&quot; refers to any designer, engineer, programmer, technical writer or other person who contributed to the Font Software.
+
+PERMISSION &amp; CONDITIONS
+Permission is hereby granted, free of charge, to any person obtaining a copy of the Font Software, to use, study, copy, merge, embed, modify, redistribute, and sell modified and unmodified copies of the Font Software, subject to the following conditions:
+1. Neither the Font Software nor any of its individual components, in Original or Modified Versions, may be sold by itself.
+2. Original or Modified Versions of the Font Software may be bundled, redistributed and/or sold with any software, provided that each copy contains the above copyright notice and this license. These can be included either as stand-alone text files, human-readable headers or in the appropriate machine-readable metadata fields within text or binary files as long as those fields can be easily viewed by the user.
+3. No Modified Version of the Font Software may use the Reserved Font Name(s) unless explicit written permission is granted by the corresponding Copyright Holder. This restriction only applies to the primary font name as presented to the users.
+4. The name(s) of the Copyright Holder(s) or the Author(s) of the Font Software shall not be used to promote, endorse or advertise any Modified Version, except to acknowledge the contribution(s) of the Copyright Holder(s) and the Author(s) or with their explicit written permission.
+5. The Font Software, modified or unmodified, in part or in whole, must be distributed entirely under this license, and must not be distributed under any other license. The requirement for fonts to remain under this license does not apply to any document created using the Font Software.
+
+TERMINATION
+This license becomes null and void if any of the above conditions are not met.
+
+DISCLAIMER
+THE FONT SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO ANY WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT OF COPYRIGHT, PATENT, TRADEMARK, OR OTHER RIGHT. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER DEALINGS IN THE FONT SOFTWARE.</pre></details>
+</section>
+
+<!-- KEYS -->
+<section id="tab-keys">
+<h2>The 19 Calls (Keys)</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §11, §20; Call texts from Casaubon 1659 (see note below).</div>
+<div class="warn"><b>Do not change the Calls.</b> The book warns against altering the Calls. Use them as given.</div>
+<div class="card"><h3>About the Call texts in v1</h3>
+<p>Casaubon 1659 contains the full text of <b>only the 19th Call</b> (the Call of the 30 Aethyres). For Calls 1–18, Casaubon gives <b>only the first words plus their English glosses</b>. The full texts of Calls 1–18 are in Dee's <i>48 Claves Angelicae</i> (Sloane MS 3191) — they are <b>not</b> in v1 and were <b>not</b> filled in from any modern translation. Athena's own versions come in a later version. Transcription below is as printed from Casaubon, unproofread, with uncertain readings flagged [?].</p></div>
+<div class="card"><h3>Correspondence table</h3><div id="keys-table"></div></div>
+<div class="card"><h3>First words of all 19 Calls (Casaubon, pp. 199–200)</h3><div id="keys-firstwords"></div></div>
+<div class="card"><h3>The 19th Call in full (Casaubon, pp. 201–209)</h3>
+<p class="mut">Word-by-word as printed: Enochian | English gloss | Pronunciation. Continuous texts follow the table. Dee's note on the first word: "I think this word wanteth as may appear by Madriax, about 44 words from the end."</p>
+<div id="keys-19"></div>
+<h3>Continuous Enochian text</h3><p id="keys-19-enoch"></p>
+<h3>Continuous English (assembled from the word-by-word glosses)</h3><p id="keys-19-eng"></p>
+<p class="mut">Sentence breaks in the English above are editorial assembly; the word-by-word table is the authoritative transcription.</p></div>
+</section>
+
+<!-- AETHYRES -->
+<section id="tab-aeth">
+<h2>The 30 Aethyres</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §12, §19–20.</div>
+<div id="aeth-rules" class="card"></div>
+<div class="card"><h3>The 30, highest to lowest</h3><div id="aeth-list"></div></div>
+<div class="card"><h3>Travel journal (saved on this device)</h3>
+<p><label>Aethyre <select id="j-aeth"></select></label></p>
+<p><label>Date <input type="date" id="j-date"></label></p>
+<p><label>Notes <textarea id="j-notes" rows="3"></textarea></label></p>
+<p><button class="action" onclick="saveJournal()">Save entry</button></p>
+<div id="j-list"></div></div>
+</section>
+
+<!-- 91 PARTS -->
+<section id="tab-parts">
+<h2>The 91 Parts of the Earth</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §25, Aethyre correspondence table (book pp. 310–319). The author's own geographic mapping, made with a map expert's help. Transcribed from the book's image-only table; v1 as-is, needs the author's proofread. Her annotations (including disagreements with Kelly and honest uncertainties) are kept as printed.</div>
+<div class="card"><h3>Find a part</h3>
+<input type="search" id="parts-search" placeholder="Search governor, place, Aethyre, tribe…" oninput="renderParts()">
+<p><label>Filter by Aethyre: <select id="parts-aeth" onchange="renderParts()"></select></label></p></div>
+<div id="parts-count" class="mut"></div>
+<div id="parts-list"></div>
+</section>
+
+<!-- SQUARES -->
+<section id="tab-squares">
+<h2>The 7 Bonorum Squares</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §26. Grids transcribed from the book's diagrams; v1 as-is, needs the author's proofread.</div>
+<div id="squares-list"></div>
+</section>
+
+<!-- TEMPLE -->
+<section id="tab-temple">
+<h2>Temple — build checklist</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §4, §13. Tick items off as you build; ticks are saved on this device.</div>
+<div id="temple-list"></div>
+<div id="temple-notes" class="card"></div>
+</section>
+
+<!-- WORKINGS -->
+<section id="tab-work">
+<h2>Workings</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §9 (19-day program), §14 (sigil tracing).</div>
+<div class="card"><h3>The 19-day working — planner</h3><p class="mut">One Key per day, entity groups per day, contact mandatory on day 19. Start Monday (Carmara/Hagonel first).</p>
+<p><label>Start date (a Monday) <input type="date" id="w19-start"></label></p>
+<p><button class="action" onclick="plan19()">Build my plan</button></p>
+<div id="w19-plan"></div></div>
+<div class="card"><h3>Sigil tracer</h3><p>Type a word. Its letters are traced letter-to-letter on the chosen tablet grid, per the book's method (§14).</p>
+<p><label>Word <input type="text" id="sig-word" placeholder="e.g. health"></label></p>
+<p><label>Tablet <select id="sig-tablet"><option value="great">Great Table</option></select></label></p>
+<p><button class="action" onclick="traceSigil()">Trace sigil</button></p>
+<canvas id="sig-canvas" width="520" height="340"></canvas>
+<div id="sig-out" class="mut"></div></div>
+</section>
+
+<!-- FINDER -->
+<section id="tab-finder">
+<h2>Which entity to call for what</h2>
+<div class="src">Source: <i>Enochian Grimoire</i> §6.</div>
+<div class="card"><h3>Find by purpose</h3><input type="search" id="finder-search" placeholder="Search a purpose…" oninput="renderFinder()"></div>
+<div id="finder-list"></div>
+</section>
+
+<!-- CACODEMONS -->
+<section id="tab-caco">
+<h2>Cacodemons</h2>
+<div class="card"><h3>Coming in a later paid version</h3>
+<p>Cacodemon material is not in the free v1 of this app. Athena covers cacodemons in <i>Enochian Grimoire</i> with strong cautions.</p>
+<p class="mut">Whether they arrive as a paywalled section inside the app or as a separate later paid version is still to be decided. No payment is collected here.</p></div>
+</section>
+</main>
+<div class="orn">❦ ❦ ❦</div>
+<script>
+/* ============ DATA (filled from the book) ============ */
+const DATA = {
+  greatTable: [],        // array of row strings
+  gtRules: "",
+  gtLayout: "",
+  bonorumDeriv: "",
+  kings: [],             // {name, planet, day, appearance, office, attributes, ministers[], seal, sealNote}
+  alphabet: [],          // {name, key|keys|svg|none, sound, note}
+  alphaRules: "",
+  keysTable: [],         // {key, corr, crowley, use}
+  keysFirst: [],        // {n, first, gloss, note}
+  call19: [],            // {n, enoch, gloss, pron}
+  call19Enoch: "",
+  call19Eng: "",
+  aethyres: [],          // {n, name}
+  aethRules: "",
+  parts91: [],           // {n,aethyre,governor,sigil,direction,tribe_sign,part_of_earth,flags[]}
+  squares: [],           // {purpose, material, method, grid: [rows]}
+  temple: [],            // {group, items: [{name, detail}]}
+  templeNotes: "",
+  program19: [],         // {day, key, entities, note}
+  finder: []             // {purpose, entities, what}
+};
+/* ============ TAB NAV ============ */
+const TABS=[["about","About"],["table","Great Table"],["bonorum","Bonorum"],["alpha","Alphabet"],["keys","Keys"],["aeth","Aethyres"],["parts","91 Parts"],["squares","Squares"],["temple","Temple"],["work","Workings"],["finder","Finder"],["caco","Cacodemons"]];
+const bar=document.getElementById("tabbar");
+TABS.forEach(([id,label],i)=>{
+  const b=document.createElement("button"); b.textContent=label;
+  b.onclick=()=>showTab(id);
+  if(i===0) b.classList.add("on");
+  b.id="tb-"+id; bar.appendChild(b);
+});
+function showTab(id){
+  document.querySelectorAll("main section").forEach(s=>s.classList.remove("on"));
+  document.getElementById("tab-"+id).classList.add("on");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("on"));
+  document.getElementById("tb-"+id).classList.add("on");
+  window.scrollTo(0,0);
+}
+/* ============ HELPERS ============ */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function load(k,d){ try{return JSON.parse(localStorage.getItem(k)) ?? d}catch(e){return d} }
+function save(k,v){ localStorage.setItem(k,JSON.stringify(v)) }
+</script>
+<script>
+/* ============ KEYS DATA — Casaubon 1659 (v1 as printed, unproofread) ============ */
+DATA.keysFirst=[
+{n:1,first:"Ol Sonf.",gloss:"I raign.",note:""},
+{n:2,first:"Adgt.",gloss:"Can.",note:""},
+{n:3,first:"Micma.",gloss:"Behold.",note:"The Call of the third Table"},
+{n:4,first:"[no first word given]",gloss:"—",note:"Numbering discussion only: “As this last, behold is the fourth, but with you the third.” / “It is the Call of the third.”"},
+{n:5,first:"Othil.",gloss:"I have set",note:"The next — in English is I have set / Otherwise — Othil."},
+{n:6,first:"Saphah.",gloss:"The mighty sounds.",note:""},
+{n:7,first:"Gah.",gloss:"The spirits",note:""},
+{n:8,first:"ROa.",gloss:"The East",note:""},
+{n:9,first:"Basem lo, or Basemlo.",gloss:"The midday the first",note:""},
+{n:10,first:"Micaoli.",gloss:"A mighty [?]",note:"Gloss appears incomplete as printed."},
+{n:11,first:"Coraaxo.",gloss:"The Thunders of judgement and wrath",note:""},
+{n:12,first:"Sai / Ox Caial.",gloss:"The mighty seat",note:"Two forms given as printed."},
+{n:13,first:"Nonci.",gloss:"O you",note:""},
+{n:14,first:"Napti.",gloss:"O you swords",note:""},
+{n:15,first:"No Romi.",gloss:"O you sons",note:""},
+{n:16,first:"Ils Tabaam",gloss:"O thou the Governour",note:""},
+{n:17,first:"Ils viva purt.",gloss:"O ye of the second flame.",note:"Dialogue also mentions “Of the first flame, it answereth to L al purt. You had not the exposition of the third word.” [?]"},
+{n:18,first:"Ils dial part.",gloss:"O thou third flame.",note:""},
+{n:19,first:"Il micalZoal part.",gloss:"O thou mighty light",note:""}
+];
+/* [enoch, gloss, pron] — 19th Call, Casaubon pp. 201–209 */
+DATA.call19=[
+["MADRIIAX","O you heavens",""],
+["DSPRAF","which dwell","Ds praf."],
+["LIL","In the first air","Lil."],
+["CHISMICAOLZ","are mighty","Chis Micáolz. [?] small “Kis” above in print"],
+["SAANIR","in the parts","Sa á nir."],
+["CAOSGO","of the earth","Ca ós go."],
+["OD","[and — gloss folded into next line]","Od. [part of “Od fisis.”]"],
+["FISIS","and execute","Od fisis."],
+["BALZIZRAS","the judgement","Bal zi zras."],
+["IAIDA","of the highest","Ia - i da. [?] “Ia” and “fa” marks unclear"],
+["NONCA","to you","Nonca."],
+["GOHULIM","It is said","Go hu lim."],
+["MICMA","Behold","Mikma / Micma."],
+["ADOIAN","the face","A do i an."],
+["MAD","of your God","Mad."],
+["IAOD","The beginning","I á od."],
+["BLIORB","of Comfort","Bliorb."],
+["SABAOOAONA","whose eyes","Sa ba o o a o na. [?] “Kis f” and “O or A” marks unclear"],
+["CHI","are","Chis."],
+["LUCIFTIAS","the brightnesse","Lu cif ti as."],
+["PIRIPSOL","of the heavens,","Pe rip sol."],
+["DS","which","Ds."],
+["ABRAASSA","provided","Abraassa. [?] “Nonsf” / “N.ncf.” marks unclear"],
+["NONCF","you","Non cf."],
+["NETAAIB","for the government","Ne tá a ib."],
+["CAOSGI","of the earth,","Ca os gi."],
+["OD","and","Od."],
+["TILB","her","Tilb."],
+["ADPHAHT","unspeakable","Ad phaht."],
+["DAMPLOZ","variety,","Dam ploz."],
+["TOOAT","furnishing","To ó at. [?] “Nonsf” / “Non cf.” marks unclear"],
+["NONCF","you","Non cf."],
+["GMICALZOMA","with a power, understanding","Gmi cál zo ma."],
+["LRASD","to dispose","L rásd."],
+["TOFGLO","all things","Tof glo."],
+["MARB","according","Marb. [?] gloss appears incomplete"],
+["OD","and","Od."],
+["TORZULP","rose up","Tor zulp."],
+["IAODAF","in the beginning","Ia ó daf. [?] “Y” mark unclear"],
+["GOHOL","saying,","Go hól."],
+["CAOSGA","The earth,","Ca ós ga."],
+["TABAORD","let her be governed","Ta ba ord."],
+["SAANIR","by her parts,","Sa á nir."],
+["OD","and","Od."],
+["CHRISTEOS","let there be","Chris te os."],
+["YRPOIL","division","Yr pó il."],
+["TIOBL","in her,","Ti óbl."],
+["BUSDIRTILB","that the glory of her","Buf dir tilb."],
+["NOALN","May be","No aln."],
+["PAID","alwayes","pa id."],
+["ORSBA","drunken","Ors ba."],
+["OD","and","Od."],
+["DODRMNI","vexed","Dodrmni. / Dod rm ni."],
+["ZYLNA","in it self.","Zyl na."],
+["ELZAPTILB","Her course,","El zap tilb."],
+["PARMGI","Let it run","Parm gi."],
+["PIRIPSAX","with the Heavens,","Pe rip fax."],
+["OD","and","Od."],
+["TA","as","Ta."],
+["QURLST","an handmaid.","Qurlst. / Qurlst."],
+["BOOAPIS","Let her serve them","B o o a p i s."],
+["LNIBM","one season:","Lnib m. [?] “Chose.” mark unclear"],
+["OUCHO","Let it confound","O v Cho."],
+["SYMP","another,","Symp."],
+["OD","and","Od."],
+["CHRISTEOS","let there be","Chris te os."],
+["AGTOLTORN","no Creature","A g tol torn. [?] “Mirk.” mark unclear"],
+["MIRC","upon,","Mirc."],
+["Q.","or","Q."],
+["TIOBL","within her","Ti ob l."],
+["LEL","the same","Lel."],
+["TON","...one and the same. All","Ton."],
+["PAOMBD","her members","Pa Ombd."],
+["DILZMO","let them differ","Dil zmo."],
+["ASPIAN","in their qualities,","As pi an."],
+["OD","and","Od."],
+["CHRISTEOS","Let there be","Chris te os."],
+["AGLTOLTORN","no one Creature","Ag l ter torn. [?] spelled AGLTOLTORN here vs AGTOLTORN (#67); “Ah.” mark unclear"],
+["PARACH","equal","Ach. / Pa rach. [?] “Ah.” / “Ach.” marks unclear"],
+["ASYMP","with another.","A symp."],
+["CORDZIZ","The reasonable Creatures of the earth, or Man.","Cord ziz."],
+["DODPAL","Let them vex","Dod pal."],
+["OD","and","Od."],
+["FIFALZ","weed out","Fi falz."],
+["LSMNAD","one another.","Ls mnad."],
+["OD","And","Od."],
+["FARGT","the dwelling places,","Farg t. [?] “Gad.” mark unclear"],
+["BAMS","Let them forget","Bams"],
+["OMAOAS","their names,","O ma o as."],
+["CONISBRA","the work of man","Co nis bra."],
+["OD","and","Od."],
+["AUAVOX","his pomp:","A ua vox."],
+["TONUG","Let them be defaced","To nug. [?] “g dg.” mark unclear"],
+["ORSCATBL","his buildings,","Ors cat bl."],
+["NOASMI","let them become","No af mi."],
+["TAEGES","Caves","Tab ges."],
+["LEVITHMONG","for the beasts of the field","Levith mong."],
+["UNCHI","confound","Un chi. [?] “Ki.” mark unclear"],
+["OMPTILB","her understanding","Omp tilb."],
+["ORS","with darknesse,","Ors."],
+["BAGLE","for why?","Bagle."],
+["MOOOAH","it repenteth me","Mo o Oah."],
+["OLCORDZIZ","I made man","Ol cord ziz."],
+["LCAPIMAO","one while","L ca pí ma o."],
+["IXOMA XIP","let her be known,","Ix o máx ip."],
+["ODCACOCASB","and another while","Od ca có casb."],
+["GOSAA","a stranger,","Go fa a."],
+["BAGLEN","because","Baglen."],
+["PII","she is","Pi i."],
+["TIANTA","the bed","Ti án ta."],
+["ABABALOND","of an harlot","A bá ba lond. [?] “gt, or dgt.” mark unclear"],
+["ODFAORGT","and the dwelling place","Od fa orgt. [?] “lotch, or loch.” mark unclear"],
+["TELOCVOVIM","of him that is fallen.","Te lóc vo v im."],
+["MADRIIAX","O you heavens","Má dri iax. [?] “yax” mark unclear"],
+["TORZU","arise,","Tor zu."],
+["OADRIAX","The lower heavens","O ádriax. [?] “ka.” mark unclear"],
+["OROCHA","underneath you","O ró cha."],
+["ABOAPRI","let them serve you,","A bó a pri."],
+["TABAORI","Govern","Tabá o ri."],
+["PRIAZ","those","Priáz."],
+["ARTABAS","that govern,","Ar ta bas. [?] “dir” mark unclear"],
+["ADRPAN","Cast down","A dr pan."],
+["CORSTA","such as","Cor sta."],
+["DOBIX","fall,","Dobix."],
+["YOLCAM","bring forth","Yol cam."],
+["PRIAZI","with those","Pri á zi."],
+["ARCOAZIOR","that encrease,","Ar co a zior."],
+["ODQUASB","and destroy","Od quasb."],
+["QTING","the rotten","Q ting."],
+["RIPIR","No place,","Ri pir."],
+["PAAOXT","let it remain","Pa a oxt."],
+["SAGACOR","in one number.","Sa gá cor. [?] “Kor” mark unclear"],
+["VML","Adde","Vml."],
+["OD","and","[?] “Pur” mark unclear; gloss folded"],
+["PRDZAR","Diminish","Prd zar."],
+["CACRG","until","Ca crg. [?] “cing” mark unclear"],
+["AOIVEAE","the Stars","A oi vé ae."],
+["CORMPT","be numbred;","Cor mpt."],
+["TORZU","arise,","Tor zu."],
+["ZACAR","Move","Zacar."],
+["ODZAMRAN","and appear","Od zamran."],
+["ASPT","before","Aspt."],
+["SIBSI","the Covenant","Sib si."],
+["BUTMONA","of his mouth,","But mo na."],
+["DS","which","Ds."],
+["SURZAS","he hath sworn","Sur zas."],
+["TIA","unto us","Tia."],
+["BALTAN","in his Justice.","Baltan."],
+["ODO","Open","Odo."],
+["CICLE","the mysteries","Cicle."],
+["QAA","of your Creation,","Q á a."],
+["OD","and","Od."],
+["OZAZMA","make us","Ozazma."],
+["PLAPLI","partakers","Pla pli."],
+["IADNAMAD","of undefiled knowledge.","Iad na mad."]
+];
+DATA.call19Enoch="MADRIIAX DSPRAF LIL CHISMICAOLZ SAANIR CAOSGO OD FISIS BALZIZRAS IAIDA NONCA GOHULIM MICMA ADOIAN MAD IAOD BLIORB SABAOOAONA CHI LUCIFTIAS PIRIPSOL DS ABRAASSA NONCF NETAAIB CAOSGI OD TILB ADPHAHT DAMPLOZ TOOAT NONCF GMICALZOMA LRASD TOFGLO MARB OD TORZULP IAODAF GOHOL CAOSGA TABAORD SAANIR OD CHRISTEOS YRPOIL TIOBL BUSDIRTILB NOALN PAID ORSBA OD DODRMNI ZYLNA ELZAPTILB PARMGI PIRIPSAX OD TA QURLST BOOAPIS LNIBM OUCHO SYMP OD CHRISTEOS AGTOLTORN MIRC Q TIOBL LEL TON PAOMBD DILZMO ASPIAN OD CHRISTEOS AGLTOLTORN PARACH ASYMP CORDZIZ DODPAL OD FIFALZ LSMNAD OD FARGT BAMS OMAOAS CONISBRA OD AUAVOX TONUG ORSCATBL NOASMI TAEGES LEVITHMONG UNCHI OMPTILB ORS BAGLE MOOOAH OLCORDZIZ LCAPIMAO IXOMA XIP ODCACOCASB GOSAA BAGLEN PII TIANTA ABABALOND ODFAORGT TELOCVOVIM MADRIIAX TORZU OADRIAX OROCHA ABOAPRI TABAORI PRIAZ ARTABAS ADRPAN CORSTA DOBIX YOLCAM PRIAZI ARCOAZIOR ODQUASB QTING RIPIR PAAOXT SAGACOR VML OD PRDZAR CACRG AOIVEAE CORMPT TORZU ZACAR ODZAMRAN ASPT SIBSI BUTMONA DS SURZAS TIA BALTAN ODO CICLE QAA OD OZAZMA PLAPLI IADNAMAD";
+DATA.call19Eng="“O you heavens which dwell in the first air, are mighty in the parts of the earth, and execute the judgement of the highest to you. It is said: Behold the face of your God, the beginning of comfort, whose eyes are the brightness of the heavens, which provided you for the government of the earth, and her unspeakable variety, furnishing you with a power, understanding to dispose all things according [?]. And rose up in the beginning saying, The earth, let her be governed by her parts, and let there be division in her, that the glory of her may be always drunken and vexed in itself. Her course, let it run with the Heavens, and as an handmaid let her serve them one season: let it confound another, and let there be no creature upon, or within her the same. All her members let them differ in their qualities, and let there be no one creature equal with another. The reasonable creatures of the earth, or man, let them vex and weed out one another. And the dwelling places, let them forget their names, the work of man and his pomp: let them be defaced, his buildings, let them become caves for the beasts of the field. Confound her understanding with darkness, for why? It repenteth me I made man. One while let her be known, and another while a stranger, because she is the bed of an harlot, and the dwelling place of him that is fallen. O you heavens, arise! The lower heavens underneath you, let them serve you; govern those that govern, cast down such as fall, bring forth with those that increase, and destroy the rotten. No place, let it remain in one number. Adde and diminish until the stars be numbered; arise, move and appear before the Covenant of his mouth, which he hath sworn unto us in his justice. Open the mysteries of your creation, and make us partakers of undefiled knowledge.”";
+function renderKeys(){
+  document.getElementById("keys-firstwords").innerHTML="<table><tr><th>#</th><th>First words</th><th>English gloss</th><th>Notes</th></tr>"+DATA.keysFirst.map(k=>"<tr><td>"+k.n+"</td><td>"+esc(k.first)+"</td><td>"+esc(k.gloss)+"</td><td>"+esc(k.note)+"</td></tr>").join("")+"</table>";
+  document.getElementById("keys-19").innerHTML="<table><tr><th>#</th><th>Enochian</th><th>English gloss</th><th>Pronunciation</th></tr>"+DATA.call19.map((r,i)=>"<tr><td>"+(i+1)+"</td><td><b>"+esc(r[0])+"</b></td><td>"+esc(r[1])+"</td><td>"+esc(r[2])+"</td></tr>").join("")+"</table>";
+  document.getElementById("keys-19-enoch").textContent=DATA.call19Enoch;
+  document.getElementById("keys-19-eng").textContent=DATA.call19Eng;
+}
+renderKeys();
+/* ============ VISUAL DATA — transcribed from book diagrams (v1 approximations, need proofread) ============ */
+DATA.alphaNote="The book's text says 21 letters, but the printed table (§5) has 25 rows. The 4 extra rows (Ch, Ph, Sh, Th) have an EMPTY Name-of-Letter cell. All 25 are given below. Glyphs are rendered with the Enochian font by Glumbosch (OFL), verified against Athena's reference chart; Ged and Tal are traced from the chart (the font has none); Ch/Ph/Sh/Th glyphs are not in the reference and come in a later version. Three letter names follow the reference chart, which Athena confirms as authoritative: Ur (L), Gisg (T), Ceph (Z).";
+DATA.alphabet=[
+{name:"Pa",eng:"B",pron:"b, silent after m unless before a vowel",key:'b',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Veh",eng:"C, K",pron:"as k or s",key:'c',note:"C and K share this glyph."},
+{name:"ged",eng:"G",pron:"as g or j",svg:'M0.00 0.00 L17.14 0.00 L12.57 8.00 L12.57 11.43 L11.43 12.57 L12.57 27.43 L17.14 35.43 L24.00 38.86 L29.71 38.86 L30.86 37.71 L33.14 37.71 L35.43 34.29 L35.43 27.43 L34.29 25.14 L29.71 22.86 L24.00 22.86 L22.86 21.71 L24.00 14.86 L27.43 9.14 L32.00 11.43 L36.57 14.86 L37.71 17.14 L38.86 17.14 L38.86 21.71 L40.00 22.86 L38.86 32.00 L36.57 36.57 L29.71 40.00 L22.86 40.00 L21.71 38.86 L19.43 38.86 L12.57 34.29 L4.57 22.86 L3.43 13.71 L2.29 12.57 L2.29 6.86 L0.00 1.14 Z',note:"Glyph traced from the reference chart — the font has no Ged."},
+{name:"gal",eng:"D",pron:"d",key:'d',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"or",eng:"F",pron:"f",key:'f',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"un",eng:"A",pron:"ah or aye",key:'a',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"graph",eng:"E",pron:"ee or ehh",key:'e',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Tal",eng:"M",pron:"m",svg:'M15.90 0.00 L17.95 0.00 L20.00 2.05 L21.03 5.13 L24.10 9.23 L24.10 11.28 L18.97 9.23 L14.87 9.23 L12.82 12.31 L12.82 15.38 L16.92 20.51 L24.10 20.51 L24.10 22.56 L23.08 23.59 L21.03 23.59 L15.90 21.54 L13.85 23.59 L13.85 26.67 L14.87 28.72 L18.97 31.79 L28.21 31.79 L32.31 29.74 L33.33 30.77 L33.33 38.97 L31.28 40.00 L22.05 40.00 L15.90 36.92 L11.79 31.79 L11.79 29.74 L10.77 28.72 L11.79 27.69 L11.79 21.54 L6.67 17.44 L6.67 9.23 L7.69 7.18 L13.85 1.03 L14.87 1.03 Z',note:"Glyph traced from the reference chart — the font has no Tal."},
+{name:"Gon",eng:"I, Y",pron:"ee, ih, eye or like y in front of a word",keys:['i','y'],note:"I and Y share the base Gon glyph; Y adds the point (shown right)."},
+{name:"na",eng:"H",pron:"h",key:'h',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Ur",eng:"L",pron:"l",key:'l',note:"Name per the reference chart (Ur); the book's §5 table gives “ve”. Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"mals",eng:"P",pron:"p",key:'p',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"ger",eng:"Q",pron:"qu or qua",key:'q',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"drux",eng:"N",pron:"n",key:'n',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Pal",eng:"X",pron:"x",key:'x',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"med",eng:"O",pron:"oh or o",key:'o',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"don",eng:"R",pron:"r",key:'r',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Ceph",eng:"Z",pron:"z or zod",key:'z',note:"Name per the reference chart (Ceph); the book's §5 table gives “Ceps”. Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"van",eng:"U, V, W",pron:"oo, u or v",key:'u',note:"U, V and W share this glyph."},
+{name:"fam",eng:"S",pron:"s",key:'s',note:"Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"Gisg",eng:"T",pron:"t",key:'t',note:"Name per the reference chart (Gisg); the book's §5 table gives “gilg”. Glyph: Enochian font (OFL), verified against the reference chart."},
+{name:"(no name)",eng:"Ch",pron:"k or ch at the end of a word",none:1,note:"Name cell EMPTY as printed. Glyph not in the reference — coming in a later version."},
+{name:"(no name)",eng:"Ph",pron:"f",none:1,note:"Name cell EMPTY as printed. Glyph not in the reference — coming in a later version."},
+{name:"(no name)",eng:"Sh",pron:"sh",none:1,note:"Name cell EMPTY as printed. Glyph not in the reference — coming in a later version. Row carries “Copyright Athena Wallinder 2005” in Pronunciation column."},
+{name:"(no name)",eng:"Th",pron:"th",none:1,note:"Name cell EMPTY as printed. Glyph not in the reference — coming in a later version."},
+];
+DATA.alphaRules="Pronunciation rules (book §5): z is read “zod”, i is read “ee”; the Golden Dawn vowel-insertion method is given for pronouncing the names. Letter-as-Angel doctrine: each letter is itself an Angel. The book rejects invented correspondences and the 22nd letter. Full pronunciation guidance is in the book; the table above gives each letter's sound as printed.";
+DATA.squares=[
+{title:"1. Table of wit and wisdom.",purpose:"Enhance charm and charisma; gain wisdom about a subject or in general.",material:"Gold — thin gold sheet metal, or gold leaf over another metal or wood. Also: printer paper / parchment with magical ink for affecting a room; cloth or parchment sewn into clothing.",method:"Carry it with you / keep on altar; or place in the room (e.g. under a table, under carpet, under a beverage pitcher); or dip an ink-written square into a beverage; or sew into someone's jacket.",grid:["BBBBBBB","BBBBBBB","BBBBBBB","BBBBBBB","BBBBBBB","BBBBBBB","BBBBBBB"]},
+{title:"2. For the exaltation and government of princes.",purpose:"Originally for royalty; bring someone into a position of power / leadership; promotion into upper management.",material:"Engraved into a ring, preferably of emerald or amethyst (or onto the back of the gemstone). Practise engraving on river stones first.",method:"Engrave with a dremel + diamond bit, or a diamond-tipped engraving pen; wear as a ring.",grid:["AOAEAAR","IONOAME","AEAMLML","VLALANR","ERARIAA","AOVARRY","EAELANV"]},
+{title:"3. Council and nobility.",purpose:"Gain good council, and acquire the traits needed to give good council; traits and appearance of nobility; a bit of glamour.",material:"Engrave into a ruby (flat rough ruby or ruby cabochon) and carry / wear; alternative: yellow sapphire, as a pendant or carried.",method:"Engrave and carry/wear it when nobility/council is needed.",grid:["ASABIBZ","ASAOLSN","VSLBNNP","IARSRNL","RGARTRN","MVRIFRI","ISRRJ[?]IA"]},
+{title:"4. The Gain and trade of merchandise. The element of Water.",purpose:"Importing/exporting; finding obscure items and best deals; increasing sales and finding new customers; wisdom in trade.",material:"Hammered/chiselled into the place of business (ideally above the main entrance); or painted on top of the doorway with magical ink (invisible ink if it cannot be seen / if renting); or carved into wood carried to buy/sell meetings.",method:"Fix above the main entrance of the store/office; carry a wooden version when meeting a client.",grid:["MTCGNLG","PMNNEOR","LAMOMSL","DLNSINI","IPMDMNE","NSGPPNM","AMCEONF"]},
+{title:"5. The quality of Earth and Waters. The element of Earth.",purpose:"Work with earth or water (environmental protection, forestry, marine life, testing, prospecting); gain information about an area (e.g. where to dig a well; precious metals/gemstones); strengthen earth/water magic.",material:"A stone from the actual area in question, engraved or painted; or drawn into the earth of the area with a magical wand or staff; or placed on a map of the area.",method:"Place the square on the area or on a map of it; use with a pendulum / dowsing rod; for magical work in an area, draw it in the earth and have the EEs of the four elements bless it, then wait (preferably overnight).",grid:["GIOOAAO","DINFGII","EAOAGET","AGAAPLP","GDPGGAV","GFEEFGF","SIAONOG"]},
+{title:"6. The motion in the Air and all that move in it. The element of Air.",purpose:"Weather-watching, forecasting weather, controlling winds, charm for favourable winds for an ocean voyage; learn about birds / the language of birds; learn of the spirits of the air and communicate with them.",material:"Drawn with magical ink onto a windsock or onto light silk tied to a pole; or on cloth worn while working with the winds; or on light paper (spells) let go on a windy day.",method:"Have the square on cloth blowing in the wind, attached to you, when working with the winds; write a request on light paper and let the wind carry it, or burn it and scatter the ashes in the wind.",grid:["EELFDLN","LAGORLO","OOGDROP","AEOMEEL","EEOLOED","MAGLELO","OZROBAA"]},
+{title:"7. Wisdom and fire. The element of Fire.",purpose:"Enhance wisdom about fire, and wisdom in general; magical works dealing with fire; protection from house fires, keeping warm, making a fireplace usable for magic.",material:"Genuine parchment with magical (waterproof) ink, worn in a hat / hat brim / head scarf; or carved into wood to be burned; or engraved into fire stones / lava rock; or carved into a candle, candle holder, or a flat stone under a candle; or engraved/painted on novena-candle glass; or engraved into a fireplace mantel / marble or granite tile under a fire.",method:"Wear the parchment square in the hat; or burn the carved wood; or place the engraved stone in/around the fire; or put the engraved stone/tile under a candle fire.",grid:["EEFAIFO","ANLNMOL","OOIALBS","TOOBSAL","SLAOOSE","LNSPEOR","RNONENA"]}
+];
+DATA.squaresNote="The book's general note (§26): the squares work on their own; the user simply tells the square what they have in mind. When not in use, wrap in silk (or tape silk over a fixed square) / tell the square to be “on” or “off”. The small reference numbers printed in each cell are reference-only and are not transcribed.";
+/* Seals — v1 approximations from the book's hand-drawn seal diagrams; flagged. Keyed by entity name as printed in §8 headings. */
+DATA.seals={
+"Baligon":{sealName:"Barees",svg:"<svg viewBox='0 0 100 60' width='220'><polygon points='10,50 90,50 90,10' fill='none' stroke='#c9a227' stroke-width='1.5'/><path d='M70 40 q-6 -8 0 -12 q4 6 0 10' fill='none' stroke='#c9a227'/><path d='M80 20 q4 -6 8 -4 M84 44 q2 4 6 2' fill='none' stroke='#c9a227'/></svg>",desc:"Right triangle; inside, two small handwritten characters [?] exact forms.",flag:true},
+"Bagenol":{sealName:"—",svg:"",desc:"There is no Seal listed for Bagenol (book's explicit statement).",flag:false},
+"Bobogel":{sealName:"Ave",svg:"<svg viewBox='0 0 140 50' width='260'><polygon points='5,25 135,5 135,45' fill='none' stroke='#c9a227' stroke-width='1.5'/><text x='20' y='30' fill='#c9a227' font-size='13' font-style='italic'>Ave</text><circle cx='70' cy='5' r='3' fill='none' stroke='#c9a227'/><line x1='78' y1='12' x2='86' y2='20' stroke='#c9a227'/><line x1='84' y1='10' x2='92' y2='18' stroke='#c9a227'/><circle cx='70' cy='45' r='3' fill='none' stroke='#c9a227'/></svg>",desc:"Long low pennant pointing left, “Ave” written inside, small circles on the edges [?] fine detail. Drawn in red in the book.",flag:true},
+"Bornogo":{sealName:"—",svg:"<svg viewBox='0 0 100 80' width='200'><path d='M30 8 q6 -4 8 0 l-4 14 q10 0 12 6 l-14 8 q-6 10 4 18 q8 10 20 14' fill='none' stroke='#c9a227' stroke-width='1.5'/><polygon points='34,36 42,40 34,44' fill='#c9a227'/><polygon points='72,62 82,68 72,72' fill='#c9a227'/><polygon points='14,30 20,36 14,42' fill='none' stroke='#c9a227'/></svg>",desc:"Single wavy squiggle line ending in small filled triangles/arrowheads; small diamond/loop on the left [?] exact path.",flag:true},
+"Babalel":{sealName:"—",svg:"<svg viewBox='0 0 160 60' width='280'><line x1='5' y1='30' x2='155' y2='30' stroke='#c9a227'/><path d='M10 8 h10 v44 h-10 z M15 52 q6 0 5 -6' fill='none' stroke='#c9a227'/><polyline points='40,20 48,10 56,20 64,10' fill='none' stroke='#c9a227'/><text x='70' y='48' fill='#c9a227' font-size='11' font-style='italic'>liba [?]</text><circle cx='130' cy='30' r='8' fill='none' stroke='#c9a227'/><polygon points='138,26 158,30 138,34' fill='none' stroke='#c9a227'/></svg>",desc:"Horizontal line; tall flag/pennant with spiral at left; zigzag “M” above; “liba” [?] below; circle + cone at right.",flag:true},
+"Befafes":{sealName:"—",svg:"<svg viewBox='0 0 80 100' width='170'><path d='M40 6 q-8 0 -8 8 M40 6 v84' fill='none' stroke='#c9a227' stroke-width='1.5'/><line x1='28' y1='24' x2='52' y2='24' stroke='#c9a227'/><line x1='28' y1='40' x2='52' y2='40' stroke='#c9a227'/><circle cx='40' cy='86' r='8' fill='none' stroke='#c9a227'/><line x1='22' y1='86' x2='58' y2='86' stroke='#c9a227'/><polygon points='22,86 14,82 14,90' fill='#c9a227'/><polygon points='58,86 66,82 66,90' fill='#c9a227'/></svg>",desc:"Vertical line, hook at top, two crossbars, circle at foot with arrow-tipped horizontal line.",flag:true},
+"Bynepor":{sealName:"—",svg:"",desc:"TOO COMPLEX — placeholder. Components: long horizontal base line; thin triangle/pennant pointing right; handwritten words “Ized” [?] and “Rocle” [?] ; two small curl flourishes with dots at far left; a dot on a short diagonal below centre-right.",flag:true},
+"Butmono":{sealName:"—",svg:"<svg viewBox='0 0 80 110' width='170'><path d='M40 20 q18 -12 18 4 M40 20 v80' fill='none' stroke='#c9a227' stroke-width='3'/><line x1='24' y1='88' x2='56' y2='104' stroke='#c9a227' stroke-width='2'/><line x1='56' y1='88' x2='24' y2='104' stroke='#c9a227' stroke-width='2'/></svg>",desc:"Tall thick staff; shepherd's-crook hook at top; X at foot with T-shaped finials.",flag:true},
+"Bnaspol":{sealName:"—",svg:"",desc:"TOO COMPLEX — placeholder. Components: horizontal baseline; looping squiggle + Z-zigzag at left; script “An” under a dome/hood curve at centre-right.",flag:true},
+"Blisdon":{sealName:"—",svg:"<svg viewBox='0 0 110 80' width='210'><path d='M40 6 q30 12 28 34 q-2 26 -30 34' fill='none' stroke='#c9a227' stroke-width='4'/><line x1='15' y1='26' x2='100' y2='26' stroke='#c9a227' stroke-width='2'/><line x1='52' y1='18' x2='52' y2='34' stroke='#c9a227' stroke-width='2'/></svg>",desc:"Bold vertical crescent bowed right; horizontal bar crossing near upper third, tapering to a point; small I-mark at the crossing.",flag:true},
+"Bnapsen":{sealName:"—",svg:"",desc:"TOO COMPLEX — placeholder. Book's note: “it is listed as the seal of Bnapsen, but has Hagonel's name on it.” Components: circle with X + crossed strokes tipped with T-bars; shallow wavy bowl with “HAGONEL” written inside; small curls; short vertical strokes + angle mark at right.",flag:true},
+"Brorges":{sealName:"—",svg:"<svg viewBox='0 0 110 80' width='210'><path d='M14 10 v44 q0 8 10 8 M14 10 q10 -4 12 4 M40 14 v40 M56 14 v40 M40 28 h22 M58 28 l10 -4 M48 44 q-6 10 0 14 q6 4 8 -2' fill='none' stroke='#c9a227' stroke-width='2'/></svg>",desc:"Bold squiggle: thick stroke with foot at left; two verticals joined by pointed bar; small loop/teardrop hanging below [?] exact path.",flag:true},
+"Blumaza":{sealName:"—",svg:"",desc:"TOO COMPLEX — placeholder. Components: Z-zigzag crossed by diagonals + small “5”/“s” at left; large script “M” in middle; long diagonal rising right ending in arrowhead + small cross-arrow; thick crescent/hook like “C” at right with “se” [?].",flag:true},
+"Bralges":{sealName:"—",svg:"<svg viewBox='0 0 90 110' width='180'><line x1='45' y1='8' x2='45' y2='60' stroke='#c9a227' stroke-width='2'/><path d='M20 8 h50 M20 8 q-4 6 0 8 M70 8 q4 6 0 8' fill='none' stroke='#c9a227' stroke-width='2'/><line x1='22' y1='30' x2='68' y2='30' stroke='#c9a227'/><polyline points='58,30 64,24 70,30' fill='none' stroke='#c9a227'/><path d='M15 66 q30 -12 60 0 q-30 14 -60 0' fill='#1a1206' stroke='#c9a227'/><polygon points='45,74 50,82 40,82' fill='#c9a227'/></svg>",desc:"Vertical stroke, top bar with drooping finials, crossbar with zigzag, solid black vesica (eye) with arrowhead below [?] finials.",flag:true}
+};
+function renderAlphabet(){
+  function alphaGlyph(a){
+  if(a.keys) return a.keys.map(function(k,j){return "<span class='enoch-glyph' title='"+(j?"Y \u2014 Gon with point":"I \u2014 Gon")+"'>"+k+"</span>";}).join(" ");
+  if(a.key) return "<span class='enoch-glyph'>"+a.key+"</span>";
+  if(a.svg) return "<svg viewBox='0 0 40 40' width='90' height='90' style='background:#0f0c08;border:1px solid var(--line);border-radius:4px'><path d='"+a.svg+"' fill='#c9a227'/></svg>";
+  return "<div class='glyph-missing'>Glyph not in reference \u2014 coming in a later version.</div>";
+}
+  document.getElementById("alpha-list").innerHTML="<p class='mut'>"+esc(DATA.alphaNote)+"</p>"+DATA.alphabet.map((a,i)=>"<div class='card'><h3>"+(i+1)+". "+esc(a.name)+" \u2014 English: "+esc(a.eng)+"</h3>"+alphaGlyph(a)+"<p><b>Pronunciation:</b> "+esc(a.pron)+"</p><p class='mut'>"+esc(a.note)+"</p></div>").join("");
+  document.getElementById("alpha-rules").innerHTML="<h3>Pronunciation &amp; doctrine</h3><p>"+esc(DATA.alphaRules)+"</p>";
+}
+function renderSquares(){
+  document.getElementById("squares-list").innerHTML="<p class='mut'>"+esc(DATA.squaresNote)+"</p>"+DATA.squares.map(s=>"<div class='card'><h3>"+esc(s.title)+"</h3><p><b>Purpose:</b> "+esc(s.purpose)+"</p><p><b>Material:</b> "+esc(s.material)+"</p><p><b>Method:</b> "+esc(s.method)+"</p><table>"+s.grid.map(r=>"<tr>"+(r.match(/\[.\?\]|./g)||[]).map(c=>"<td style='text-align:center'>"+esc(c)+"</td>").join("")+"</tr>").join("")+"</table></div>").join("");
+}
+renderAlphabet();
+renderSquares();
+</script>
+
+<script>
+/* ============ 91 PARTS DATA — book §25 table, transcribed from images (v1 as-is) ============ */
+DATA.parts91=[{"aethyre": "LIL", "direction": "NE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Occodon", "n": 1, "part_of_earth": "Egypt", "sigil": "Diagonal line from an upper-left arrowhead down-right, crossed by a short diagonal bar, then a step down and a horizontal line to the right.", "tribe_sign": "Nephthalim"}, {"aethyre": "LIL", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Pascomb", "n": 2, "part_of_earth": "Southern Syria", "sigil": "Vertical line down from the top, then a zigzag down-left, then a V shape ending in a small arrowhead at the lower left.", "tribe_sign": "Zabulon"}, {"aethyre": "LIL", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Valgars", "n": 3, "part_of_earth": "Mesopotamia", "sigil": "Diagonal line from an upper arrowhead down-left, then right-angle steps forming a bent-arrow shape, ending in a horizontal line at the bottom.", "tribe_sign": "Isacaraah"}, {"aethyre": "ARN", "direction": "NORTH", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Doagnis", "n": 4, "part_of_earth": "Cappadocia / Central Turkey", "sigil": "Diagonal line from the top down-left to a point, then a zigzag right-down shape ending in an arrowhead at the lower left.", "tribe_sign": "Manasse"}, {"aethyre": "ARN", "direction": "SOUTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Pacasna", "n": 5, "part_of_earth": "Tuscia: Tuscany.", "sigil": "Horizontal line from a left arrowhead, zigzagging down-right in a Z shape with a tall vertical stroke at the right.", "tribe_sign": "Ruben"}, {"aethyre": "ARN", "direction": "SOUTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Dialiva", "n": 6, "part_of_earth": "Parva Asia: Asia Minor.", "sigil": "Horizontal line from a left arrowhead, then a lightning-bolt zigzag down-right.", "tribe_sign": "Ruben"}, {"aethyre": "ZOM", "direction": "NE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Samapha", "n": 7, "part_of_earth": "Hyrcania: Area SE of the Caspian sea in Iran", "sigil": "Horizontal line from a left arrowhead with a small notch, then a large V shape with a step up at the right.", "tribe_sign": "Nephthalim"}, {"aethyre": "ZOM", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Virooli", "n": 8, "part_of_earth": "Thrace. Includes 32, overlaps with 31. Eastern Greece, Turkey in Europe and South Bulgaria", "sigil": "Diagonal line from a left arrowhead down-right, then a rectangular U (up, right, down) with a separate vertical stroke at the right.", "tribe_sign": "Isacaraah"}, {"aethyre": "ZOM", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Governor/place-name reading uncertain: 'Gosmam' [?].", "Sigil description is an approximate reading of the drawn marks."], "governor": "Andispi", "n": 9, "part_of_earth": "Gosmam \"Here appear great Hills and veins of gold and mines appear\". Can't be Arctic where Kelly claims, or can't be gold.", "sigil": "Vertical line from an upper arrowhead down, then a step right and down, ending in a long horizontal line to the right.", "tribe_sign": "Gad"}, {"aethyre": "PAZ", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Thotanf", "n": 10, "part_of_earth": "Thebaidi: Thebes (Luxor) in Egypt and surrounding area.", "sigil": "Diagonal line from an upper arrowhead down-right, then a step down-right, with a triangle shape below.", "tribe_sign": "Gad"}, {"aethyre": "PAZ", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Word read as 'fiare' as printed [?].", "Sigil description is an approximate reading of the drawn marks."], "governor": "Axziarg", "n": 11, "part_of_earth": "Parsadai: Parsagarda of Persia. Or the Northern Iranian province of Fars. Persia is however covered under 74. \"Here the sun shineth fiare\". Definitely not the Pacific NorthWest.", "sigil": "Horizontal line from a left arrowhead, then a step down, a step right, a step down, ending in a diagonal down-right.", "tribe_sign": "Gad"}, {"aethyre": "PAZ", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Pothnir", "n": 12, "part_of_earth": "India: Pakistan and Punjab. Not modern India. The part around the Indus river.", "sigil": "Short horizontal line from a left arrowhead, then a diagonal down-right.", "tribe_sign": "Ephraim"}, {"aethyre": "LIT", "direction": "EAST", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Lazdixi", "n": 13, "part_of_earth": "Bactrian: Turkmenistan and Northern Afghanistan. See number 15 for nearby areas.", "sigil": "Vertical line from an upper arrowhead down, then a step right, a diagonal down-left, and a long diagonal down-right.", "tribe_sign": "Dan"}, {"aethyre": "LIT", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Nocamal", "n": 14, "part_of_earth": "Cilicia: Adana, SouthEast Turkey. Also part of number 6.", "sigil": "Angular zigzag: diagonal down-right, diagonal down-left, horizontal right, then vertical down ending in an arrowhead at the bottom.", "tribe_sign": "Isacaraah"}, {"aethyre": "LIT", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Trailing 'in ??????' as printed — location unidentified in the book.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Tiarpax", "n": 15, "part_of_earth": "Oxiana: A town on or the area near the Amu Darya river. in ??????", "sigil": "Zigzag: diagonal down-right from the left arrowhead area, an up-down M shape, ending in a rectangular step.", "tribe_sign": "Zabulon"}, {"aethyre": "MAZ", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Saxtomp", "n": 16, "part_of_earth": "Numidia: Eastern Algerian coastal district, between Eastern Algeria and Mauritania. See 86 and 91 for nearby areas.", "sigil": "Diagonal line from the upper left down-right, then a zigzag up-right forming a W-like peak, ending in a diagonal.", "tribe_sign": "Asseir"}, {"aethyre": "MAZ", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Vavaamp", "n": 17, "part_of_earth": "Cyprus.", "sigil": "Horizontal line from a left arrowhead, then a zigzag down and a long vertical line down.", "tribe_sign": "Ephraim"}, {"aethyre": "MAZ", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Governor name reading uncertain: 'Zirzird' [?].", "Sigil description is an approximate reading of the drawn marks."], "governor": "Zirzird", "n": 18, "part_of_earth": "Parthia: NE Iran to the South of Hyracania. See part 7 for nearby areas.", "sigil": "Horizontal line from a left arrowhead, then a step down and a V-shaped notch.", "tribe_sign": "Asseir"}, {"aethyre": "DEO", "direction": "NORTH", "flags": ["'dessert' as printed (sic).", "Sigil description is an approximate reading of the drawn marks."], "governor": "Opmacas", "n": 19, "part_of_earth": "Getualia: The western Sahara dessert.", "sigil": "Diagonal line from an upper arrowhead down-right, then a V shape below (down-left then down-right).", "tribe_sign": "Manasse"}, {"aethyre": "DEO", "direction": "WEST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Genadol", "n": 20, "part_of_earth": "Arabia: The desert part of Saudi Arabia.", "sigil": "Vertical line from an upper arrowhead down, then a step right, a diagonal down-right, then a step left and down.", "tribe_sign": "Iehudah"}, {"aethyre": "DEO", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Aspiaon", "n": 21, "part_of_earth": "Phalagon: Greenland (Dee thinks by the vision)", "sigil": "Three zigzag peaks (W/M shape) rising to the right, starting from a lower-left arrowhead.", "tribe_sign": "Zabulon"}, {"aethyre": "ZID", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Zamfres", "n": 22, "part_of_earth": "Mantiana: Basically lake Urmia in Northern Iran. Also Lake Van, which is about 200 miles to the West, in E Turkey. It used to be called Lake Mantiana.", "sigil": "Horizontal line from a left arrowhead, then a step down, a step left, a step down, ending in a diagonal down-right.", "tribe_sign": "Asseir"}, {"aethyre": "ZID", "direction": "EAST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Todnaon", "n": 23, "part_of_earth": "Soxia: Sinkiang (is in NW China)", "sigil": "Diagonal line from a left arrowhead up-right, then a vertical down, a horizontal right, and a short vertical down (flag/F-like shape).", "tribe_sign": "Dan"}, {"aethyre": "ZID", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Luxenberg' as printed (sic).", "Sigil description is an approximate reading of the drawn marks."], "governor": "Pristac", "n": 24, "part_of_earth": "Gallia: France expanded to include Belgium, Luxenberg and the Southern Netherlands. Includes 56", "sigil": "Vertical line from a lower arrowhead up, then a diagonal up-right, then a vertical down and a horizontal right at the bottom.", "tribe_sign": "Nephthalim"}, {"aethyre": "ZIP", "direction": "WEST", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Oddiorg", "n": 25, "part_of_earth": "Illyria: Central and Eastern Austria, Western Hungary, Yugoslavia (excluding Macedonia), Northern Bulgaria and Romania (depending on time and who they conquered).", "sigil": "Vertical line from a lower arrowhead up, then a diagonal up-right, then a diagonal down-right, then a diagonal down-left ending in a horizontal line.", "tribe_sign": "Iehudah"}, {"aethyre": "ZIP", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Cralpir", "n": 26, "part_of_earth": "Sogdiana: Between Amudarya and Syrdarya rivers including Uzbekistan, W Tadzhikistan, etc.", "sigil": "Horizontal line from a left arrowhead, then a step up, then a tall diagonal up-right forming a stepped peak.", "tribe_sign": "Gad"}, {"aethyre": "ZIP", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Doanzin", "n": 27, "part_of_earth": "Lydia: Coastal Region in Western Turkey.", "sigil": "Vertical line from an upper arrowhead down, then a horizontal right, then a step down and a horizontal right ending in a vertical up.", "tribe_sign": "Nephthalim"}, {"aethyre": "ZAX", "direction": "SW", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Lexarph", "n": 28, "part_of_earth": "Caspis: Area to the SW of the Caspian sea in Iran.", "sigil": "Diagonal line from a left arrowhead up-right, then a long horizontal line to the right.", "tribe_sign": "Zabulon"}, {"aethyre": "ZAX", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Sweden Switzerland' as printed (no comma).", "Sigil description is an approximate reading of the drawn marks."], "governor": "Comanan", "n": 29, "part_of_earth": "Germania: Modern Germany, Czechoslovakia, Poland, Sweden Switzerland and Tyrol in Western Austria.", "sigil": "Vertical line from an upper arrowhead down, then a step left and down (L shape).", "tribe_sign": "Isacaraah"}, {"aethyre": "ZAX", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Bourkino Faso', 'Gana', 'ivory coast' as printed (sic).", "Sigil description is an approximate reading of the drawn marks."], "governor": "Tabitom", "n": 30, "part_of_earth": "Trenam: Likely Teniam, the area straddling ivory coast, Bourkino Faso, Gana.", "sigil": "Long horizontal line from a left arrowhead to the right.", "tribe_sign": "Nephthalim"}, {"aethyre": "ICH", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks."], "governor": "Molpand", "n": 31, "part_of_earth": "Bithynia: NW Coast of Modern Turkey, and includes Istanbul. See number 40 and number 6 for nearby areas.", "sigil": "Vertical line from an upper arrowhead down, then two zigzags (Z shapes) down.", "tribe_sign": "Gad"}, {"aethyre": "ICH", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Vsnarda", "n": 32, "part_of_earth": "Graecia: Istanbul.", "sigil": "Diagonal line from an upper arrowhead down-left to a point, then a step right and down forming a shallow bowl, with a diagonal up-right at the right.", "tribe_sign": "Simeon"}, {"aethyre": "ICH", "direction": "WEST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Ponodol", "n": 33, "part_of_earth": "Lycia: Part of Western Turkey. On the South Coast of Turkey", "sigil": "Rectangular U-shape (down, right, up) with a diagonal line from the lower-right corner down-left ending in an arrowhead.", "tribe_sign": "Iehudah"}, {"aethyre": "LOE", "direction": "SW", "flags": ["'Giapan' as printed (sic).", "Sigil description is an approximate reading of the drawn marks."], "governor": "Tapamal", "n": 34, "part_of_earth": "Onigap: Beyond Hispaniola, which is modern Haiti/Dominica, and Giapan. Turner thinks Mexico. However I think Jamaica is more likely.", "sigil": "Stepped shape: vertical down, step right, vertical down, step left, vertical down, with an arrowhead at the upper right.", "tribe_sign": "Simeon"}, {"aethyre": "LOE", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Gedoons", "n": 35, "part_of_earth": "India Major: Which is all of SE Asia, but does not include modern India at all!", "sigil": "Diagonal line from the lower left up-right, then a step right, then a diagonal up-right; with a short horizontal arrowhead line at the upper left.", "tribe_sign": "Benjamin"}, {"aethyre": "LOE", "direction": "SOUTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Ambrial", "n": 36, "part_of_earth": "Orcheny: Dee thinks Singapore and part of Modern Indonesia. Turner thinks the Marsh Arabs in Modern Iraq. Dee is more likely correct.", "sigil": "Horizontal line from a left arrowhead, then a zigzag down-right forming a Z, then a long diagonal down-right.", "tribe_sign": "Ruben"}, {"aethyre": "ZIM", "direction": "SE", "flags": ["Final letter of governor name reads as 'd' in a font where it looks like eth (ð) [?].", "Sigil description is an approximate reading of the drawn marks."], "governor": "Gecaond", "n": 37, "part_of_earth": "Achaia: Southern Greece including Athena.", "sigil": "Vertical line from an upper arrowhead down, then a horizontal right, then a step down and a horizontal left (rectangular C/U shape).", "tribe_sign": "Gad"}, {"aethyre": "ZIM", "direction": "EAST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Laparin", "n": 38, "part_of_earth": "Armenia: An area that includes Eastern Turkey to the Caspian sea including modern Armenia and Azerbaijan.", "sigil": "Vertical line from an upper arrowhead down, crossed by a horizontal bar, ending in a small step right at the bottom (cross with a foot).", "tribe_sign": "Dan"}, {"aethyre": "ZIM", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks."], "governor": "Docepax", "n": 39, "part_of_earth": "Cilicia: Definitely NOT historical Cilicia. \"It is up in the mountains beyond Cathay\" (China), could be Tibet, or Kamchatka, or the other mountainous regions.", "sigil": "Diagonal line from the upper right down-left, then a step down, then a long horizontal line left ending in an arrowhead.", "tribe_sign": "Isacaraah"}, {"aethyre": "VTA", "direction": "SE", "flags": ["Final letter of governor name reads as 'd' in a font where it looks like eth (ð) [?].", "Sigil description is an approximate reading of the drawn marks."], "governor": "Tedoond", "n": 40, "part_of_earth": "Paphlagonia: Northern part of Turkey.", "sigil": "Horizontal line with a small triangle/arrowhead at the left, a vertical line down from the middle, crossed by a horizontal bar (T/cross-like).", "tribe_sign": "Asseir"}, {"aethyre": "VTA", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy from here on."], "governor": "Vivipos", "n": 41, "part_of_earth": "Phasiana: A area in Eastern Turkey, North of Lake Van. See number 22 for nearby areas.", "sigil": "Diagonal line from an upper arrowhead down-right to a point, with a small V/diamond shape below (rough, blotchy print).", "tribe_sign": "Isacaraah"}, {"aethyre": "VTA", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Ooanamb", "n": 42, "part_of_earth": "Chaldei: it's the people of Chaldea.", "sigil": "Angular bent-arrow shape: diagonal down-left from the top, a step right, a diagonal up-right to a point, then a diagonal down-left with a dot (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "OXO", "direction": "NE", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Tahando", "n": 43, "part_of_earth": "Itergi: to the South of Cilicia. South of 39.", "sigil": "Two nested chevron/angle shapes with a solid triangle at the middle and a check mark at the lower right (rough, blotchy print).", "tribe_sign": "Nephthalim"}, {"aethyre": "OXO", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Nociabi", "n": 44, "part_of_earth": "Macedonia: Northern Greece and Southern Yugoslavia, which is now called the republic of Macedonia.", "sigil": "Angular zigzag: vertical down from the top left, diagonal down-right to a point, diagonal down-left, then a step right and vertical down (rough, blotchy print).", "tribe_sign": "Gad"}, {"aethyre": "OXO", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Tastoxo", "n": 45, "part_of_earth": "Garamantica: The Eastern Sahara.", "sigil": "Squared U with a diagonal crossbar (N-like) and a vertical stroke at the right; arrowhead at the upper left (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "LEA", "direction": "SOUTH", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Cocarpt", "n": 46, "part_of_earth": "Sauromatica: Clearly the land of Sauron aka Mordor. Sarmatia which is another name for the Southern part of Russia.", "sigil": "Rectangular C-shape: horizontal top, vertical down at the right, horizontal left at the bottom with a dot, and a separate step below at the left (rough, blotchy print).", "tribe_sign": "Ruben"}, {"aethyre": "LEA", "direction": "WEST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Etheopai' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Lanacon", "n": 47, "part_of_earth": "Aethiopai: Includes Etheopai as well as all of Africa South of the equator.", "sigil": "Angular stepped shape: horizontal top, step down, step right, then a step down and a step right ending in a vertical down (rough, blotchy print).", "tribe_sign": "Iehudah"}, {"aethyre": "LEA", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Sochial", "n": 48, "part_of_earth": "Fiacim: The giant mountain at the North Pole, which hasn't been shown to exist physically", "sigil": "Squared U (down, right, up) with a horizontal line extending right from the base (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "TAN", "direction": "SOUTH", "flags": ["'The the' duplicated as printed.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Sigmorf", "n": 49, "part_of_earth": "Colchica: The the land of the Golden Fleece, thought to be modern Georgia.", "sigil": "Two diagonal lines forming a large arrowhead/chevron pointing right, with a dot at the point and a small triangle at the lower left (rough, blotchy print).", "tribe_sign": "Ruben"}, {"aethyre": "TAN", "direction": "EAST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Aydropt", "n": 50, "part_of_earth": "Cireniaca: Eastern Libya. Modern spelling is Cyrenaica", "sigil": "Angular Z-like shape: diagonal down-right from an upper-left triangle, then a step down and a step left ending in a horizontal line (rough, blotchy print).", "tribe_sign": "Dan"}, {"aethyre": "TAN", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Tocarzi", "n": 51, "part_of_earth": "Nasamonia: West of Cireniaca (number 50).", "sigil": "Triangle/angle shape: vertical down from the top, diagonal down-right, then a diagonal down-left to a triangle at the bottom (rough, blotchy print).", "tribe_sign": "Nephthalim"}, {"aethyre": "ZEN", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Nabaomi", "n": 52, "part_of_earth": "Carthago: Carthage in modern Tunisia, near Tunis.", "sigil": "Stepped shape: horizontal right from a left triangle, step up, horizontal right, then a diagonal down-left and up-right forming a chevron (rough, blotchy print).", "tribe_sign": "Asseir"}, {"aethyre": "ZEN", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Zafasai", "n": 53, "part_of_earth": "Coxlant: Four rivers, high ground, very much East, and it is apparently most definitely Eden. Could be Iran by this description.", "sigil": "Angular shape: diagonal down-right from a left triangle to a peak, then a step down and a squared U at the bottom (rough, blotchy print).", "tribe_sign": "Isacaraah"}, {"aethyre": "ZEN", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Isreal' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Valpamb", "n": 54, "part_of_earth": "Idumea: Southern Isreal and Jordan.", "sigil": "Angular shape: diagonal down-left from the top, step right, vertical down, with a triangle at the lower left (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "POP", "direction": "NW", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Torzoxi", "n": 55, "part_of_earth": "Parstavia: Moldavia.", "sigil": "Rectangular U (down, right, up) with a diagonal line rising from its upper-left corner to a triangle at the upper right (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "POP", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Final letter of governor name reads as 'd' in a font where it looks like eth (ð) [?].", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Abaiond", "n": 56, "part_of_earth": "Celtica: Belgium, Netherlands. Possibly also NW France.", "sigil": "Angular shape: diagonal down-right from the top left, a peak, then a diagonal down-right to a triangle at the right, with a notch (rough, blotchy print).", "tribe_sign": "Benjamin"}, {"aethyre": "POP", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Carribean' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Omagrap", "n": 57, "part_of_earth": "Vinsan: Consists of five islands consisting of men with talons who are devils. Could be in Indonesia, Carribean, or Turner/Cousins says an area in modern Kazakhstan.", "sigil": "Vertical line from an upper triangle down, then a horizontal right, then a diagonal down-left, ending in a horizontal line (rough, blotchy, Z-like).", "tribe_sign": "Zabulon"}, {"aethyre": "KHR", "direction": "SE", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Zikron", "n": 58, "part_of_earth": "Tolpam: Antarctica.", "sigil": "Horizontal arrowhead line at the top, then a zigzag down (diagonal down-right, diagonal down-left), ending in a horizontal line (rough, blotchy print).", "tribe_sign": "Asseir"}, {"aethyre": "KHR", "direction": "WEST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Parziba", "n": 59, "part_of_earth": "Carcedonia: Modern Tunisia.", "sigil": "Cross-like shape: vertical line crossed by a horizontal bar, with a diagonal line from an upper-left triangle crossing the vertical (rough, blotchy print).", "tribe_sign": "Iehudah"}, {"aethyre": "KHR", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Totocan", "n": 60, "part_of_earth": "Italia: Italy and Istria.", "sigil": "Angular shape: diagonal down-right from the top, a peak (N shape) at the top right, then a long diagonal down-left ending in a small horizontal foot (rough, blotchy print).", "tribe_sign": "Isacaraah"}, {"aethyre": "ASP", "direction": "NW", "flags": ["'Scandanavia' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Chirspa", "n": 61, "part_of_earth": "Brytania: British Isles, Scandanavia and Iceland. Ignore Turner/Cousins idea that it is the rest of the world.", "sigil": "Vertical line from an upper triangle down, a step left, then a diagonal down-left and a diagonal up-right forming a small zigzag (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "ASP", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Pheonecia', 'Isreal' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Toantom", "n": 62, "part_of_earth": "Phenices: Pheonecia, Modern Lebanon and Northern Isreal.", "sigil": "Angular shape: diagonal down-right from a left triangle, a step down-right, then a long diagonal down-right (rough, blotchy print).", "tribe_sign": "Benjamin"}, {"aethyre": "ASP", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Vixpalg", "n": 63, "part_of_earth": "Comaginen: SW Turkey.", "sigil": "Rectangular shape: horizontal top from a left triangle, step down, horizontal right, vertical down, horizontal left (rough, blotchy print).", "tribe_sign": "Simeon"}, {"aethyre": "LIN", "direction": "NW", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Ozidaia", "n": 64, "part_of_earth": "Apulia: Apulia (in Italy).", "sigil": "Angular shape: diagonal down-right from a lower-left triangle to a peak, then a step down and a vertical down (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "LIN", "direction": "EAST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Governor cell carries the note '(this sigil is missing in the diary notes)', though a sigil IS drawn in the Sigil column — transcribed as drawn.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Paraoan", "n": 65, "part_of_earth": "Marmarica: North African coastal region between the Nile and modern Libya.", "sigil": "Angular zigzag: diagonal down-right, then a steeper diagonal down-right ending in a small arrowhead at the right (rough, blotchy print).", "tribe_sign": "Dan"}, {"aethyre": "LIN", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Northrn' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Calzirg", "n": 66, "part_of_earth": "Concavasyria: Northrn Syria.", "sigil": "Vertical line from an upper triangle down, a step left and down, then a step right and down (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "TOR", "direction": "NORTH", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Ronoamb", "n": 67, "part_of_earth": "Gebal: A city about 20 miles North of Beirut.", "sigil": "Vertical line from the top down, a step right, then a horizontal right ending in a vertical down (rough, blotchy, L/step shape).", "tribe_sign": "Manasse"}, {"aethyre": "TOR", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Onizimp", "n": 68, "part_of_earth": "Elam: Part of modern Iran at the head of the Persian gulf.", "sigil": "Two horizontal lines: an upper short line with a peak, and a lower longer line with a triangle at the left and a dot at the right (rough, blotchy print).", "tribe_sign": "Gad"}, {"aethyre": "TOR", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Place-name reading uncertain: 'Idunia' [?].", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Zaxanin", "n": 69, "part_of_earth": "Idunia: Beyond Greenland. The Baffin Island perhaps?", "sigil": "Vertical line from an upper triangle down, then a horizontal right at the bottom (L shape, rough, blotchy print).", "tribe_sign": "Zabulon"}, {"aethyre": "NIA", "direction": "NORTH", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Orcamir", "n": 70, "part_of_earth": "Media: North Western Iran.", "sigil": "Stepped shape: horizontal right from a left triangle, step down, horizontal right, step down, horizontal right ending in a vertical up (rough, blotchy print).", "tribe_sign": "Manasse"}, {"aethyre": "NIA", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Chialps", "n": 71, "part_of_earth": "Ariana: East Iran, Western Pakistan and South Afghanistan.", "sigil": "Stepped shape: horizontal right from the top, step down, horizontal left, step down, horizontal right, step down and a squared U at the bottom (rough, blotchy print).", "tribe_sign": "Gad"}, {"aethyre": "NIA", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "'Bagdad' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Soageel", "n": 72, "part_of_earth": "Chaldea: South Iraq. From the Persian Gulf to just South of Bagdad.", "sigil": "Angular shape: diagonal down-right from an upper-left triangle to a point, then a diagonal down-left, then a small horizontal foot (rough, blotchy print).", "tribe_sign": "Zabulon"}, {"aethyre": "VTI", "direction": "NORTH", "flags": ["'Boznia' as printed (sic).", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Mirzind", "n": 73, "part_of_earth": "Sericipopuli: Lat. The people of Serici. In Boznia. Turner/Cousins think people in E Asia.", "sigil": "Angular shape: diagonal up-right from a lower-left triangle to a peak, then a horizontal right with a dot, ending in a step down (rough, blotchy print).", "tribe_sign": "Manasse"}, {"aethyre": "VTI", "direction": "SOUTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Obuaors", "n": 74, "part_of_earth": "Persia: Persia.", "sigil": "Vertical line from an upper triangle down, then a step right, a step down, and a step right (rough, blotchy print).", "tribe_sign": "Ruben"}, {"aethyre": "VTI", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Ranglam", "n": 75, "part_of_earth": "Gongatha: Towards the South Pole. Equatorial Africa. (Middle Africa/Congo)", "sigil": "Vertical line from an upper triangle down, then a step right and down, ending in a step left and down (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "DES", "direction": "NW", "flags": ["Governor name final letter reads as 'd' in a font where it looks like eth (ð) [?].", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Pophand", "n": 76, "part_of_earth": "Gorsin: Possibly Asia.", "sigil": "Horizontal top line with a triangle at the left, a step down at the right, and a small horizontal foot (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "DES", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Nigrana", "n": 77, "part_of_earth": "Hispania: Spain and Portugal.", "sigil": "Squared shape: vertical down from the top, step right, vertical down, horizontal left, vertical down, horizontal right (rough, blotchy print).", "tribe_sign": "Benjamin"}, {"aethyre": "DES", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Bazchim", "n": 78, "part_of_earth": "Panphilia: Part of SW Turkey. See numbers 14 and 33 nearby areas. It is also part of 6.", "sigil": "Angular shape like a house/pentagon: diagonal down-left from the top, vertical down at the left, a triangle at the lower left, horizontal right at the bottom (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "ZAA", "direction": "SOUTH", "flags": ["Place-name reading uncertain: 'Oacibi' [?].", "Trailing '????????' as printed — location unidentified in the book.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Saziami", "n": 79, "part_of_earth": "Oacibi: (Oasitae) Lat. Of the oasis. \"Of the Oasis\". ????????", "sigil": "Zigzag: diagonal down-right from the upper left, a step, then a vertical down ending in a triangle at the bottom (rough, blotchy print).", "tribe_sign": "Ruben"}, {"aethyre": "ZAA", "direction": "NORTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Mathvla", "n": 80, "part_of_earth": "Babylon: Iraq.", "sigil": "Angular shape: diagonal down-right from a left triangle to a peak, then a diagonal down-left to a point, then a diagonal up-right ending in a vertical down (rough, blotchy print).", "tribe_sign": "Manasse"}, {"aethyre": "ZAA", "direction": "SE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Orpamb", "n": 81, "part_of_earth": "Median: \"Much Northward\".", "sigil": "Vertical line from an upper triangle down, a step right, a step down, and a diagonal (rough, blotchy print).", "tribe_sign": "Asseir"}, {"aethyre": "BAG", "direction": "SE", "flags": ["'Idumian: ???????' as printed — location unidentified in the book.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Labnixp", "n": 82, "part_of_earth": "Idumian: ???????", "sigil": "Stepped shape: horizontal right from an upper triangle, step down, horizontal left, step down, horizontal right (rough, blotchy print).", "tribe_sign": "Gad"}, {"aethyre": "BAG", "direction": "NE", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Focisni", "n": 83, "part_of_earth": "Felix Arabia: Lat. Lucky Arabia. The red sea coast of Arabia inc. areas around Mecca and Yemen.", "sigil": "Shape like a squared M/W: vertical down from an upper-left triangle, step right, diagonal up-right, diagonal down-right, diagonal up-right (rough, blotchy print).", "tribe_sign": "Nephthalim"}, {"aethyre": "BAG", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Oxlopar", "n": 84, "part_of_earth": "Metagnitidim: Modern Northern Morocco.", "sigil": "Angular shape: diagonal down-right from an upper-left triangle, then a zigzag down-right forming a Z, ending in a long diagonal down-right (rough, blotchy print).", "tribe_sign": "Simeon"}, {"aethyre": "RII", "direction": "WEST", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Vastrim", "n": 85, "part_of_earth": "Assyria: Modern Kurdistan.", "sigil": "Long horizontal line with a triangle at the left and dots along it (rough, blotchy print).", "tribe_sign": "Iehudah"}, {"aethyre": "RII", "direction": "NORTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Odraxti", "n": 86, "part_of_earth": "Africa: Not Africa as we know it. The part of Libya around Tripoli.", "sigil": "Vertical line from an upper triangle down, then a horizontal right at the bottom (L shape, rough, blotchy print).", "tribe_sign": "Manasse"}, {"aethyre": "RII", "direction": "NW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Gomziam", "n": 87, "part_of_earth": "Bactriani: The people of Bactriana. See part 13 for Bactriana.", "sigil": "Stepped vertical shape: vertical down from an upper triangle, step right, step down, step right, step down, step left, vertical down (rough, blotchy, S-like).", "tribe_sign": "Ephraim"}, {"aethyre": "TEX", "direction": "NW", "flags": ["Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Taongla", "n": 88, "part_of_earth": "Afran: Dee thinks the Arimispi, People with one eye in their breast instead of their head. Could be from Africa.", "sigil": "Angular shape: diagonal down-right from an upper-left triangle, a diagonal down-left, then a diagonal down-right ending in a squared U at the bottom (rough, blotchy print).", "tribe_sign": "Ephraim"}, {"aethyre": "TEX", "direction": "NORTH", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Gemnimb", "n": 89, "part_of_earth": "Phrygia: Central Turkey.", "sigil": "Angular shape: diagonal down-right from the top left, a diagonal down-left to a point, then a diagonal down-right ending in a triangle at the bottom (rough, blotchy print).", "tribe_sign": "Manasse"}, {"aethyre": "TEX", "direction": "WEST", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Advorpt", "n": 90, "part_of_earth": "Crete: Crete.", "sigil": "Horizontal line from a left triangle, a step down, then a squared U, ending in a horizontal line (rough, blotchy print).", "tribe_sign": "Iehudah"}, {"aethyre": "TEX", "direction": "SW", "flags": ["Aethyre cell blank in image; carried down from group heading.", "Sigil description is an approximate reading of the drawn marks; print is rough/blotchy."], "governor": "Dozinal", "n": 91, "part_of_earth": "Mauritania: Morocco and northern Algeria. Also includes the area of 84 (N morocco).", "sigil": "Angular shape: diagonal down-right from an upper triangle to a point, then a horizontal left, then a diagonal down-right (rough, blotchy print).", "tribe_sign": "Simeon"}];
+function renderParts(){
+  const q=(document.getElementById("parts-search").value||"").toLowerCase();
+  const af=document.getElementById("parts-aeth").value;
+  const rows=DATA.parts91.filter(r=>{
+    if(af && r.aethyre!==af) return false;
+    if(!q) return true;
+    return (r.governor+" "+r.part_of_earth+" "+r.aethyre+" "+r.tribe_sign+" "+r.direction+" "+r.n).toLowerCase().includes(q);
+  });
+  document.getElementById("parts-count").textContent="Showing "+rows.length+" of 91 parts.";
+  document.getElementById("parts-list").innerHTML=rows.map(r=>"<div class='card'><h3>#"+r.n+" — "+esc(r.governor)+" <span class='tag'>"+esc(r.aethyre)+"</span></h3><p><b>Part of the Earth:</b> "+esc(r.part_of_earth)+"</p><p><b>Direction to face:</b> "+esc(r.direction)+" &nbsp;|&nbsp; <b>Tribe / Sign:</b> "+esc(r.tribe_sign)+"</p><p class='mut'><b>Sigil (described):</b> "+esc(r.sigil)+"</p>"+(r.flags.length?"<p class='mut'><b>Notes:</b> "+r.flags.map(esc).join(" ")+"</p>":"")+"</div>").join("") || "<p>No parts match.</p>";
+}
+(function(){
+  const sel=document.getElementById("parts-aeth");
+  const aeths=[...new Set(DATA.parts91.map(r=>r.aethyre))];
+  sel.innerHTML="<option value=''>All Aethyres</option>"+aeths.map(a=>"<option>"+esc(a)+"</option>").join("");
+})();
+renderParts();
+/* ============ GREAT TABLE + BONORUM DATA (book §1–2, §8, §13) ============ */
+DATA.greatTable=[
+"r Z i l a f A y t l p a e b O a Z a R o p h a R a",
+"a r d Z a i d p a L a m · u N n a x o P S o n d n",
+"c z o n s a r o Y a u b x a i g r a n o o m a g g",
+"T o i T t z o P a c o C a o r p m n i n g b e a l",
+"S i g a s o m r b z n b r r s O n i Z i r l e m u",
+"f m o n d a T d i a r l p i x i n r C z i a M h l",
+"o r o i b A h a o z p i · M O r d i a l h C t G a",
+"t N a b r V i x g a s d h o c a n c h i a s o m t",
+"O i i i t T p a l O a i · A r b i z m i i l p i z",
+"A b a m o o o a C u c a C O p a n a B a m S m a P",
+"N a o c O T t n p r n T o d O l o P i n i a n b a",
+"o c a n m a g o t r o i M r x p a o c s i z i x p",
+"S h i a l r a p m z o x a a x t i r V a s t r i m",
+"m o t i b · · a T n a n · n a n T a · · b i t o m",
+"d o n p a T d a n V a a a T a O A d u p t D n i m",
+"o l o a G e o o b a u a · a a b c o o r o m e b b",
+"O P a m n o V G m d n m m T o g c o n x m a l G m",
+"a p l s T e d e c a o p O n h o d D i a l e a o c",
+"s c m i o o n A m l o x C p a t A x i o V s P s N",
+"V a r s G d L b r i a p h S a a i X a a r V r o i",
+"o i P t e a a p D o c e · m p h a r s l g a i o l",
+"p s u a c N r Z i r Z a p M a m g l o i n L i r x",
+"S i o d a o i n r z f m · o l a a D n g a T a p a",
+"d a l t T d n a d i r e r p a L c o i d x P a c n",
+"d i x o m o n s i o s p a n d a z N z i V a a s a",
+"O o D p z i A p a n l i X i i d P o n s d A s p i",
+"r g o a n n Q A C r a r e x r i n h t a r a d i L"];
+DATA.gtLayout="HER LAYOUT (from the diary notes) — a LABELED DISPUTE, not reconciled: <b>ORO quarter = EAST = FIRE = RED. MOR quarter = SOUTH = AIR = WHITE. MPH quarter = WEST = WATER = GREEN. OIP quarter = NORTH = EARTH = BLACK</b> [sic: the book prints “MOR” for both South and North; from her own 12-name list the North quarter is OIP — transcribed as printed]. The Golden Dawn layout is different: East = Air (yellow), South = Fire (red), West = Water (blue), North = Earth (black). The book: “The GD has always used East for Air and South for Fire, so they just changed the Enochian material to fit with their present teachings… the Enochian entities told John Dee and Edward Kelly differently.” She also notes the original colours are Red, White, Green, Black; the central cross (Tablet of Union: EXARP, BITOM, HCOMA, NANTA) should be left white or painted gold; and “this layout is not necessarily the ‘correct’ version — the Angels were not entirely clear when they dictated the directions.”";
+DATA.gtRules="<h3>How names are derived (her rules, §1)</h3><ol>"+
+"<li><b>Black / great cross names</b> — the four names in the black cross rule the elements and the Table as a whole: <b>Exarp, Hcoma, Nanta, Bitom</b>. The GD correlated them: Exarp–air, Hcoma–water, Nanta–earth, Bitom–fire. Elexarp, Comanan and Tabitom can also be used, with Paraoan (from the unused letters; also governor of LIN, the 22nd Aire).</li>"+
+"<li><b>12 names of God (banner names)</b> — read left to right along the central row of each quarter tablet: <b>Oro Ibah Aozpi, Mor Dial Hctga, Mph Arsl Gaiol, Oip Teaa Pdoce</b>. “These are generally thought of as only four names, but they are in fact 12 names and separate aspects or entities in total.” Calling “Oipteaapdoce” calls three separate entities.</li>"+
+"<li><b>Kings (4, one per quarter)</b> — drawn as a clockwise spiral from the centre of each quarter tablet, starting centre-left, spiralling clockwise inwards. Eastern King: <b>Bataiva or Bataivh</b> (“Bataiva, Bataivh, or Bataivah” — Bataiva more active/aggressive, Bataivh more passive/mild; using all 8 letters was never in the original instructions). Others: <b>Ickzchia, Ickzchil, or Ickzichial; Raagios, Raagiol, or Raagasiol; Eldprnaa or Edlprnaa</b>. The King is slightly higher than the Seniors. GD correlates Kings with the Sun and the tablet's element.</li>"+
+"<li><b>Seniors (6 per quarter)</b> — read outwards from the centre on the middle crosses. Eastern Seniors: <b>Habioro</b> (GD: Mars), <b>Aaozaif</b> (GD: Jupiter), <b>Htmorda</b> (GD: Moon), <b>Ahaozpi</b> (GD: Venus), <b>Hipotga</b> (GD: Saturn), <b>Avtotar</b> (GD: Mercury). Seniors are called before the Angels. She rejects reducing Seniors to planets: “the Enochian entities never mentioned to Dee and Kelly anything about the seniors being planetary.”</li>"+
+"<li><b>Angels of the sub-quadrant crosses</b> — read the cross vertically for one name, horizontally for the other. As printed (16 pairs, tablet labels not given in the book): Idoigo and Ardza; Llacza and Palam; Aourrzz and Aloai; Aiaoai and Oiiit; Angpoi and Unnax; Anaeem and Sondn; Spmnir and Ilpiz; Cbalpt and Arbiz; Olgota and Aalco; Nelapr and Omebb; Iaaasd and Atapa; Maladi and Olaad; Noalmr and Oloag; Vadali and Obaua; Rzionr and Nrzfm; Uolxdo and Sioda.</li>"+
+"<li><b>God names ruling the Angels of the four directions</b> — 8 per quarter tablet; first set read left to right on the arm of the cross, second set on the vertical leg in each sub-quarter. (Carried on the book's diagrams; not listed in extractable text.)</li>"+
+"<li><b>Angels of the four directions (16 per quarter tablet)</b> — read left to right in each sub-quarter, the four names below the arms of the cross. Names with or without the centre letter may be used; the Angels told Dee to use both.</li>"+
+"<li><b>God names + “good Angels” (16 per sub-quadrant)</b> — these names never contain the central letter from the cross. A black-cross letter is added to the beginning of each Angelic name (look down the row to the letter in the great cross). Once the first name is derived (Rzla), the remaining three are made by moving the letters forward: Zlar, Larz, Arzl. Worked examples (Eastern): God name <b>Erzla</b> → Angels <b>Rzla, Zlar, Larz, Arzl</b>; <b>Evtpa</b> → <b>Vtpa, Tpav, Pavt, Avtp</b>; <b>Hcnbr</b> → <b>Cnbr, Nbrc, Brcn, Rcnb</b>; <b>Hxgzd</b> → <b>Xgzd, Gzdx, Zdxg, Dxgz</b> (p. 36 prints “Zdgx” for the third — both as printed).</li></ol>"+
+"<h3>Sub-quadrant purposes (§1)</h3><ul>"+
+"<li><b>Eastern sub-quadrant → Medicine and curing diseases:</b> Czns or Czons, Tott or Toitt, Sias or Sigas, Fmnd or Fmond.</li>"+
+"<li><b>Southern sub-quadrant → Precious stones, finding/use/virtues/powers of stones and metals:</b> Aira or Aigra, Ormn or Orpmn, Rsni or rsoni, Iznr or “Izi.nr” [as printed].</li>"+
+"<li><b>Western sub-quadrant → Transformation:</b> Taco or Tagco, Nhdd or Nhodd, Paax or Patax, Saiz or Saaiz.</li>"+
+"<li><b>Northern sub-quadrant → The Four Elements:</b> Opmn or Opamn, Apst or Aplst, Scio or “Sc.mio” [as printed], Vasg or Varsg.</li></ul>"+
+"<p>Sub-element layout inside each quarter: upper left = Fire of [quarter element], upper right = Air of it, bottom right = Water of it, lower left = Earth of it.</p>"+
+"<p>The book uses the <b>original</b> Great Table, not the GD “reformed” table. The four quarter tablets are 12 columns × 13 rows each, joined by the black cross (centre column + middle row). Blank cells (·) were verified against the page image.</p>";
+DATA.bonorumDays=[
+{day:"Friday",king:{name:"Baligon",aka:"= Carmara",planet:"Venus of Venus",appearance:"Idem quae (the same everything) as Carmara with his triple Crown and long purple robe.",office:"“The sons of light, and their Sons, are Subject unto my Command. This is a mystery, I have spoken of it. Note it thoroughly. They are my servants. By them thou shall work Marvels. My time is yet to come. The Operation of the Earth is Subject to my power. And I am the first of the Twelve. My Seale is called Barees. And here it is. In His Name = Carmara, with my name, by my Character, and the rest of my Ministers are these things brought to pass.”",attributes:"King of Venus of Venus; rules Friday. Call on a Friday, perhaps during the hour of Venus, and/or when Venus is above the horizon. For half the year Venus is above the horizon during the day, for the other half during the night."},prince:{name:"Bagenol",aka:"= Hagonel",planet:"Venus of Luna",appearance:"Same as Carmara: triple Crown and long purple robe.",office:"Same diary quote as Baligon (repeated in the Bagenol section).",attributes:"Prince of Venus of Luna; rules Friday. Call on a Friday, perhaps during the hour of the Moon, and/or when the Moon is in the sky. Waxing Moon for magic; dark or waning Moon to enhance divination or skrying."},ministers:"Aoainnl oainnlA ainnlAo innlAoa nnlAoai nlAoain lAoainn Lbbnaau bbnaauL bnaauLb naauLbb aauLbbn auLbbna uLbbnaa Ioaespm oaespmI aespmIo espmIoa spmIoae pmIoaes mIoaesp Gglppsa glppsaG lppsaGg ppsaGgl psaGglp saGglpp aGglpps Oeeooez eeooezO eooezOe ooezOee oezOeeo ezOeeoo zOeeooe Nllrlna llrlnaN lrlnaNl rlnaNll lnaNllr naNllrl aNllrln".split(" "),ministerNote:"The 42 ministers are printed once per weekday pair, under the Prince. Each King's section carries a “Servient spirits” heading but NO minister list. The Bagenol list is printed twice in the book (identical). §13 spells the first base name “Aoaynnl” — §8 prints “Aoainnl”. Both as printed."},
+{day:"Sunday",king:{name:"Bobogel",aka:"",planet:"Sol of Sol",appearance:"He appeared in a black velvet coat; hose close round hose with velvet upperstocks, overlayed with gold lace. Velvet cap with a black feather. A cape on one shoulder, purse about his neck, rapier on his girdle. Long beard, bloomers and slippers. “I wear these robes not in respect of myself, but of my Government.”",office:"“The distributing, giving, and bestowing of Wisdom and Science. The teaching of true Philosophy, true understanding of all learning, grounded in wisdom. With the excellencies in Nature. And of many other great Mysteries, marvellously available, and necessary to the advancing of the Glory of our GOD, and Creator.”",attributes:"King of Sol of Sol; rules Sunday. Call on a Sunday, perhaps during the hour of the Sun."},prince:{name:"Bornogo",aka:"",planet:"Sol of Venus",appearance:"He appeared in a red robe with a gold circlet on his head; he showed his seal.",office:"“The Altering of the Corruption of Nature into Perfection. The knowledge of Metals, and generally the Princely Ministering to the right Noble and Mighty King BOBOGEL in his government of Distributing, giving and bestowing of Wisdom, science, True Philosophy, and True Understanding, and of other very many his peculiar Royal Properties.”",attributes:"Prince of Sol of Venus; rules Sunday. Call on a Sunday, perhaps during the hour of Venus, and definitely when Venus is above the horizon."},ministers:"Leenarb eenarbL enarbLe narbLee arbLeen rbLeena bLeenar Lnanaeb nanaebL AanebLn naebLna aebLnan ebLnana bLnanae Roemnab oemnabR emnabRo mnabRoe nabRoem abRoemn bRoemna Leaorib eaoribL aoribLe oribLea ribLeao ibLeaor bLeaori Neiciab eiciagN iciabNe ciabNei iabNeic abNeici bNeicia Aoidiab oidiabA idiabAo diabAoi iabAoid abAoidi bAoidia".split(" "),ministerNote:"“eiciagN” as printed [sic — rotation pattern expects eiciabN]. “AanebLn” as printed."},
+{day:"Tuesday",king:{name:"Babalel",aka:"",planet:"Mars of Mars",appearance:"As a king with a crown of Gold, long whitish robe. Left arm sleeve very white, right arm sleeve black. He seemed to stand upon water. His name written on his forehead: Babalel.",office:"“He is the King in Waters. Mighty and wonderful in waters, whose power is in the bowels of the waters, whose royal person with thy Noble prince Befafes, and his 42 Ministers.”",attributes:"King of Mars of Mars; rules Tuesday. Call on a Tuesday, perhaps during the hour of Mars, and/or when Mars is above the horizon."},prince:{name:"Befafes",aka:"(planetary table: Bfafes)",planet:"Mars of Sol",appearance:"He opened his bosom: lean, feathers under his robes. Golden girdle with his name written: Befafes.",office:"“He is Prince of the seas: Thy power is upon the waters. Thou drowned pharaoh, and hast destroyed the wicked. Thy name was known to Moses; thou lived in Israel… Whose Noble ministers 42, are of very great power, dignity, and Authority: As some in the measuring of the motions, of the waters, and saltiness of the seas, in giving success in Battles, reducing ships… To some all the fishes and monsters of the seas… generally are the distributers of Gods Judgments upon the Waters that cover the earth. Some conduct waters through the earth, others do beautify Nature in her Composition. The rest are distributors and deliverers of the Treasures and unknown substances of the Seas.” (Also: known to the Egyptians as Obelison.)",attributes:"Prince of Mars of Sol; rules Tuesday. Call on a Tuesday, perhaps during the hour of Sol, and/or when Mars is above the horizon and/or the Sun is in the sky. Best: Mars above the horizon on a Tuesday while the Sun is in the sky, during the hour of the Sun."},ministers:"Eilomfo ilomfoE lomfoEi omfoEil mfoEilo foEilom oEilomf Neotpta eotptaN otptaNe tptaNeo ptaNeot taNeopt aNeotpt Sagacii agaciiS gaciiSa aciiSag ciiSaga iiSagac iSagaci Onedpon nedponO edponOn dponOne ponOned onOnedp nOnedpo Noonman oonmanN onmanNo nmanNoo manNoon anNoonm nnNoonma Eteulgl teulglE eulglEt ulglEte lglEteu glEteul lEteulg".split(" "),ministerNote:""},
+{day:"Thursday",king:{name:"Bynepor",aka:"",planet:"Jupiter of Jupiter",appearance:"No description is noted; the book assumes a long purple (or perhaps red) velvet robe, judging by other Heptarchy Kings.",office:"“Upon the distribution and participation of whose exalted, most especially and glorified power, rest only and depend the general state and Condition of all things… Vita Suprema Vita Superior Vita Infima tuis sunt mensurata manibus. (Something about striving/achieving the highest and avoiding the lower worlds, shades of the dead or Chthonic Deities.)… Thou art in all, and all hath some being by thee, yet thy power is nothing in respect of his power, which hath sent thee.” He goes on to tell Dee how he will create new worlds, ways of thinking and so on. (Office given with her grammatical editing.)",attributes:"King of Jupiter of Jupiter; rules Thursday. Call on a Thursday, perhaps during the hour of Jupiter, and/or when Jupiter is above the horizon."},prince:{name:"Butmono",aka:"(§14 list: Bvtmono)",planet:"Jupiter of Mars",appearance:"He wore a long red robe and a circlet of gold on his head.",office:"“Who is life and breath in living Creatures. All things live by thee, the Image of One excepted. All the kinds of the beasts of the earth does he endue with life. Thy seal is their glory. Of God thou art sanctified. And thou rejoice. The living, the end, and beginning of all beasts thou know; and by sufferance thou disposes them, until your Vyoll (no idea what this means, perhaps will?) be run.”",attributes:"Prince of Jupiter of Mars; rules Thursday. Call on a Thursday, perhaps during the hour of Mars, and/or when Jupiter and/or Mars is above the horizon."},ministers:"Bbarnfl barnflB arnflBb rnflBba nflBbar flBbarn lBbarnf Bbaigao baigaoB aigaoBb igaoBba gaoBbai aoBbaig oBbaiga Bbalpae balpaeB alpaeBb lpaeBba paeBbal aeBbalp eBbalpa Bbanifg banifgB anifgBb nifgBba ifgBban fgBbani gBbanif Bbosnia bosniaB osniaBb sniaBbo niaBbos isBbosn aBbosni Bbasnod basnodB asnodBb snodBba nodBbas odBbasn dBbasno".split(" "),ministerNote:""},
+{day:"Wednesday",king:{name:"Bnaspol",aka:"",planet:"Mercury of Mercury",appearance:"Bnaspol appeared wearing a red robe, and with a crown. After him came Prince Blisdon and their Ministers.",office:"“To whom the Earth with her bowels, and secrets whatsoever are delivered; and hast said to me, heretofore, What thou art. There, I may know. Thou art great, but, (as Thou truly didst confess) He in whom Thou art, is greater than thou. Therefore, In the Name, and etc.”",attributes:"King of Mercury of Mercury; rules Wednesday. Call on a Wednesday, perhaps during the hour of Mercury, and/or when Mercury is above the horizon. [sic: the book prints the stray phrase “The Statutory Declaration of Professional Expertise” in this passage — a stray autocorrect/placeholder in the source, transcribed as printed.]"},prince:{name:"Blisdon",aka:"",planet:"Mercury of Jupiter",appearance:"Blisdon appeared in a multi-coloured robe, red the most predominant colour, with a circlet of gold on his head.",office:"“Unto whom the keys of the Mysteries of the Earth are delivered. Whose 42 Ministers are Angels, that govern under thee. All which thy Mighty King BNASPOL bad me use; and affirmed that they are, and shall be at my Commandment. Therefore, In the Name and etc.”",attributes:"Prince of Mercury of Jupiter; rules Wednesday. Call on Wednesday, or Thursday if you must, preferably during the hour of Jupiter. Best while both Jupiter and Mercury are in the sky, or at least Mercury or Jupiter."},ministers:"Elgnseb lgnsebE gnsebEl nsebElg sebElgn ebElgns bElgnse Nlinzub linzubN inzubNl nzubNli zubNlin ubNlinz bNlinzu Sfamllb famllbS amllbSf mllbSfa llbSfam lbSfaml bSfamll Oogosrb ogosrbO gosrbOo osrbOog srbOogo rbOogos bOogosr Nrpcrrb rpcrrbN pcrrbNr crrbNrp rrbNrpc rbNrpcr bNrpcrr Ergdbab rgdbabe gdbaber dbaberg babergd abergdb nbergdba".split(" "),ministerNote:"“rgdbabe” as printed [sic — rotation pattern expects rgdbabE]."},
+{day:"Saturday",king:{name:"Bnapsen",aka:"",planet:"Saturn of Saturn",appearance:"He appeared as a King with a crown on his head.",office:"“Is of the government of all enchanters, conjurers, witches and wicked spirits hated of God, and included forever in outward darkness. Who hast said to me, That by thee I shall cast out the power of all wicked spirits: And that by thee I shall or may know the doings and practices of evil men, and more than may be spoken or uttered to man.”",attributes:"King of Saturn of Saturn; rules Saturday. Call on a Saturday, perhaps during the hour of Saturn, and/or when Saturn is above the horizon."},prince:{name:"Brorges",aka:"",planet:"Saturn of Mercury",appearance:"Prince Brorges appeared in red clothing; when he opened his clothes there issued mighty and most terrible flames of fire out of his sides. In the raging fire the word BRORGES appeared tossing to and fro.",office:"“Who, being the Prince, Chief Minister, and Governor under the right Puissant BNAPSEN; didst appear in the most terrible manner, with fiery flaming streams, and said: Noui Ianuam Mortis. Et percussit Gloria Dei, Impiorum parietes. (Her translation: ‘Know the entrance of Death, and strike glory of God / The Divine, into the house of the wicked’). Therefore, In the Name and etc. When the ministers appeared they were holding a table with the letters of their names, which they tossed into the flames.”",attributes:"Prince of Saturn of Mercury; rules Saturday. Call on a Saturday, if possible during the hour of Mercury or Saturn. Also definitely when Saturn is in the sky and favourably aligned with Mercury."},ministers:"Banssze ansszeB nsszeBa sszeBan szeBans zeBanss eBanssz Biapaoe iapaoeB apaoeBi paoeBia aoeBiap oeBiapa eBiapao Bnamgen namgenB amgenBn mgenBna genBnam enBnamg nBnamge Bnuages nuagesB uagesBn agesBnu gesBnua esBnuag sBnuage Blbopoo lbopooB bopooBl opooBlb pooBlbo ooBlbop oBlbopo Babepen abepenB bepenBa epenBab penBabe enBabep nBabepe".split(" "),ministerNote:""},
+{day:"Monday",king:{name:"Blumaza",aka:"(§14 list: Blvmaza)",planet:"Luna of Luna",appearance:"King Blumaza appeared with a regal manner, wearing a red robe and a gold crown on his head.",office:"“His office or anything about him is not mentioned accept for: ‘He appeared not yet, by that name.’”",attributes:"King of Luna of Luna; rules Monday. Call on a Monday, during the hour of the Moon if possible, but definitely when the Moon is visible in the sky and preferably waxing or full."},prince:{name:"Bralges",aka:"",planet:"Luna of Saturn",appearance:"Not stated in the diaries. The book notes Heptarchy Princes wore long red velvet robes with a crown or circlet (usually a circlet for Princes), so this was likely how he appeared.",office:"“The Creatures living in thy Dominion are subject to thy power, whose subjects are invisible: and which to my seer appeared like little smokes, without any form, whose seal of government is this: Who said: Behold, I am come, I will teach thee, Names without Numbers. The Creatures subject unto me shall be known unto you.” (His words, with modified grammar.)",attributes:"Prince of Luna of Saturn; rules Monday. Call on a Monday, perhaps during the hour of Luna, and definitely when the Moon is in the sky."},ministers:"Oesngle esngleO sngleOe ngleOes gleOesn leOesng eOesngl Auzniln uznilnA znilnAu nilnAuz ilnAuzn lnAuzni nAuznil Illmafs llmafsI lmafsIl mafsIll afsIllm fsIllma sIllmaf Nrsogoo rsogooN sogooNr ogooNrs gooNrso ooNrsog oNrsogo Nrrcprn rrcprnN rcprnNr cprnNrr prnNrrc rnNrrcp nNrrcpr Labdgre abdgreL bdgreLa dgreLab greLabd reLabdg eLabdgr".split(" "),ministerNote:""}
+];
+DATA.bonorumDeriv="<p>The Bonorum are 49 names of “good Angels” given to Dee and Kelly. Each day of the week has a King and a Prince. The King's planetary attribution matches the weekday (e.g. Baligon, King of Venus, rules Friday). The Princes do NOT match the weekday planet in the same way (e.g. Bornogo, Prince of Sol of Venus, rules Sunday). <b>Identity equivalences the book states:</b> King Camara and Prince Baligon are the same entity under two names; Prince Hagonel and Bagenol are the same entity. They are the chief ruling spirits of the Heptarchy, first sent by Uriel to speak with Dee and Kelly. The Camara/Hagonel description is given under Baligon/Bagenol “since none other are given for Bagenol and Baligon”.</p>"+
+"<p><b>Derivation (7 tables → 49 names):</b> Seven tables were given, used to make the round Bonorum diagram. The 49 names are derived by the numbers beside each letter: letters with the number “1” link to form a name, and so on. There are 49 squares in each tablet and 49 names in total. Write 1–49, then place the letters as you find them; the first letter of each name is B. You end with 49 names of seven letters each. The seven tables are the seven Bonorum squares (see Squares tab). Each square combines all seven planets and all seven days.</p>"+
+"<p><b>Two orderings — do not conflate them.</b> The book gives the weekday-pair ordering (above) AND a 49-name table by ruling planet, where each planetary set of 7 has its own King / Prince / 5 Governors. In the planetary table, e.g., Bornogo is Prince of the Venus set, while in the weekday ordering Bagenol is the Prince paired with Baligon on Friday. The planetary table is below.</p>"+
+"<p><b>Ministers and hours:</b> Each weekday pair has 42 ministers. Each set of 7 ministers rules for 4 hours: 12–4am, 4–8am, 8am–noon, noon–4pm, 4–8pm, 8pm–midnight. <b>Governor-of-the-Hour rule (§13):</b> take a minister's name and move all letters forward one space to derive its Governors. Worked example (Friday): the first minister is Aoaynnl (§8: Aoainnl). Its Governors: Aoaynnl, Oaynnla, Aynnlao, Ynnlaoa, Nnlaoay, Nlaoayn, Laoayn. The book: “It seems that all seven rule over each four hour period of each day as opposed to each one of the seven ruling over 34 minutes.” To work with a Governor: first contact the King, then the Prince, then the Minister of that day. (The book's §13 arithmetic — “49 ministers… 48 Governors… 49 Governors” — is confusing as printed; the worked rotation rule above is what the calculator uses.)</p>";
+DATA.planetary49=[
+["Baligon","Venus of Venus","Friday","King"],["Bornogo","Sol of Venus","Sunday","Prince"],["Bapnido","Mars of Venus","Tuesday","Governor"],["Besgeme","Jupiter of Venus","Thursday","Governor"],["Blumapo","Marcury [sic] of Venus","Wednesday","Governor"],["Bmamgel","Saturn of Venus","Saturday","Governor"],["Basledf","Luna of Venus","Monday","Governor"],
+["Bobogel","Sol of Sol","Sunday","King"],["Bfafes","Mars of Sol","Tuesday","Prince"],["Basmelo","Jupiter of Sol","Thursday","Governor"],["Bernole","Mercury of Sol","Wednesday","Governor"],["Branglo","Saturn of Sol","Saturday","Governor"],["Brisfli","Luna of Sol","Monday","Governor"],["Bnagole","Venus of Sol","Friday","Governor"],
+["Babalel","Mars of Mars","Tuesday","King"],["Butmono","Jupiter of Mars","Thursday","Prince"],["Bazpama","Mercury of Mars","Wednesday","Governor"],["Blintom","Saturn of Mars","Saturday","Governor"],["Bragiop","Luna of Mars","Monday","Governor"],["Bermale","Venus of Mars","Friday","Governor"],["Bonefon","Sol of Mars","Sunday","Governor"],
+["Bynepor","Jupiter of Jupiter","Thursday","King"],["Blisdon","Mercury of Jupiter","Wednesday","Prince"],["Balceor","Saturn of Jupiter","Saturday","Governor"],["Balmara","Luna of Jupiter","Monday","Governor"],["Benpagi","Venus of Jupiter","Friday","Governor"],["Barnafa","Sol of Jupiter","Sunday","Governor"],["Bmilges","Mars of Jupiter","Tuesday","Governor"],
+["Bnaspol","Mercury of Mercury","Wednesday","King"],["Brorges","Saturn of Mercury","Saturday","Prince"],["Baspalo","Luna of Mercury","Monday","Governor"],["Binodab","Venus of Mercury","Friday","Governor"],["Bariges","Sol of Mercury","Sunday","Governor"],["Binofon","Mars of Mercury","Tuesday","Governor"],["Bardago","Jupiter of Mercury","Thursday","Governor"],
+["Bnapsen","Saturn of Saturn","Saturday","King"],["Bralges","Luna of Saturn","Monday","Prince"],["Bormila","Venus of Saturn","Friday","Governor"],["Buscnab","Sol of Saturn","Sunday","Governor"],["Bminpol","Mars of Saturn","Tuesday","Governor"],["Bartiro","Jupiter of Saturn","Thursday","Governor"],["Bliigan","Mercury of Saturn","Wednesday","Governor"],
+["Blumaza","Luna of Luna","Monday","King"],["Bagenol","Venus of Luna","Friday","Prince"],["Bablibo","Sol of Luna","Sunday","Governor"],["Busduna","Mars of Luna","Tuesday","Governor"],["Blingef","Jupiter of Luna","Thursday","Governor"],["Barfort","Mercury of Luna","Wednesday","Governor"],["Bamnode","Saturn of Luna","Saturday","Governor"]
+];
+DATA.planetary49Note="Spelling variants in the book's §14 text list (as printed, not harmonised): Bmamgal for Bmamgel, Bvtmono for Butmono, Belmara for Balmara, Baldago for Bardago, Blvmaza for Blumaza; numbering typo “21 Baspalo” for 31. The planetary table above is from the image-only table (PDF pp. 138–139).";
+/* ============ KEYS TABLE, AETHYRES, FINDER, TEMPLE, PROGRAM, SDA ============ */
+DATA.keysTable=[
+[0,"Not used","Not used","Not used","Not used"],
+[1,"Spirit, Used in all workings","All of the tablet of Union only. Not for tablets","Spirit","Spirit, poles for rest of calls"],
+[2,"Spirit to enhance 1st call","EHNB from tablet of union only. Not for tablets","Used with 1st call","Like 1st but stronger; framework"],
+[3,"12 Kingdoms","EXARP Angels from tablet union; Air (ORO) tablet Angels.","Air","All same as GD/Crowley"],
+[4,"South; Air","HCOMA Angels from tablet union; Water (MPH) tablet Angels.","Water; South","All same as GD/Crowley"],
+[5,"North; Earth","NANTA Angels from tablet union; Earth (MOR) tablet Angels.","Earth","All same as GD/Crowley"],
+[6,"West, Water","BITOM Angels from tablet union; Fire (OIP) tablet Angels.","Fire","All same as GD/Crowley"],
+[7,"East; Fire","Water sub element of Air (3 then 7)","Water of Air; East","(blank)"],
+[8,"Not clear","Earth sub element of Air (3 then 8)","Earth of Air; South","(blank)"],
+[9,"Not clear","Fire sub element of Air (3 then 9)","Fire of Air; West","(blank)"],
+[10,"North","Air sub element of Water (4 then 10)","Air of Water; North","(blank)"],
+[11,"East sub","Earth sub element of Water (4 then 11)","Earth of Water; East","(blank)"],
+[12,"South sub","Fire sub element of Water (4 then 12)","Fire of Water; South","(blank)"],
+[13,"North?","Air sub element of Earth (5 then 13)","Air of Earth; South","(blank)"],
+[14,"West?","Water sub element of Earth (5 then 14)","Water of Earth","(blank)"],
+[15,"First Flame","Fire sub element of Earth (5 then 15)","Fire of Earth","(blank)"],
+[16,"Second Flame","Air sub element of Fire (6 then 16)","Air of Fire","(blank)"],
+[17,"Third Flame","Water sub element of Fire (6 then 17)","Water of Fire","(blank)"],
+[18,"Fourth Flame?","Earth sub element of Fire (6 then 18)","Earth of Fire","(blank)"],
+["30 Aethyres","Used when traveling the 30 Aethyres","Used in workings with the 30 Aethyres","(blank)","Used with the 30 aethyres"]
+];
+DATA.keysTableNote="Image-only table (§11), transcribed as printed. Columns: Key | Mine (Athena's reading from the wording of the Calls) | Crowley/GD | AS (Aurum Solis) | Ben Rowe. The book's text says “I have not yet added the views of Aurum Solis, and Ben Rowe” — but the printed table DOES have AS and Ben Rowe columns (partly filled); transcribed as printed. The Crowley/GD column uses GD element mapping (Air = ORO, Water = MPH, Earth = MOR, Fire = OIP), which conflicts with her own layout — transcribed as printed, not reconciled. Framing: “Below is a table containing the 19 calls and any possible elemental or planetary correspondences… I have included my version… as well as that of Crowley.” “Crowley and the AS lined them up with the elements in order. I took the words from the calls to decide which one is for which, and Ben Rowe used a bit of GD, and a bit of contacting the EEs for his.” And (§20): “neither the EEs nor Dee gave any instructions for use of the Enochian calls or keys! Any instructions or correspondences that you see used with the keys have been made up since about 1890 or later.” Keep in mind the table is only a hypothesis based on assuming the 18 calls are to be used with the Great Table — “there is no such mention in any of the surviving diary notes.”";
+DATA.aethyres=["LIL","ARN","ZOM","PAZ","LIT","MAZ","DEO","ZID","ZIP","ZAX","ICH","LOE","ZIM","VTA","OXO","LEA","TAN","ZEN","POP","KHR","ASP","LIN","TOR","NIA","VTI","DES","ZAA","BAG","RII","TEX"];
+DATA.aethRules="<p>Spellings as printed in the book's §25 table (do NOT “correct” them): KHR, VTI, ZAA, RII differ from the more common CHR, UTI, OXI spellings elsewhere. Casaubon's 19th-Call list prints “Chr” and “Uti” — variants, not corrections.</p>"+
+"<p>The 30 Aethyres run LIL (highest) → TEX (lowest). TEX, the 30th, sits just above our earth and contains the four elements. Travel usually starts with TEX and works slowly up to LIL; LIL-down is also possible, but TEX is easier to comprehend. Three governors rule each Aethyre; TEX has four, one per element.</p>"+
+"<p><b>Pacing.</b> Beginners: one Aethyre per month or so; keep returning to the same one, focus on one at a time. Experienced: still only one per week. Crowley warning: one Aethyre per day is NOT recommended — “Some theorize that this operation, of going through the Aethyres too fast, is what led to Crowley's insanity.” Never all 30 at once: doing all 30 in a row is “nearly pointless… just quickly passing through them and not actually working with them” — “I would equate doing all 30 in a row… with those next to useless new-age workshops.” Do not move on until you feel you know the previous Aethyre; but no more than a couple of months between Aethyres or focus is lost. Start with TEX for a month or two or three. “There is not a time limit, this is not a competition.” Crowley's reported landmarks (HGA union in the 10th, the Abyss in the 13th) were HIS experience, not a rule.</p>"+
+"<p><b>Travel ritual outline (§12):</b> 1. Set up the temple (incense, candles, colours). 2. Statement of purpose. 3. Prayers or opening rituals. 4. Recite or vibrate the Call of the 30 Aethyres with the Aethyre's name inserted (optionally the 1st and 2nd Calls first). 5. Vibrate or sing the names of the 3 (or 4) governors while drawing their sigils in the air. 6. Astrally travel forth. 7. Ask for a guide on arrival. 8. Explore and ask questions. 9. Retrace your steps, thank your guide. 10. Re-enter your body slowly. 11. Write down all you remember. 12. Close in your usual way — the book recommends the prayers and the first Call.</p>";
+DATA.finder=[
+{purpose:"Transformation",entities:"Western sub-quadrant good Angels (per §1): Taco / Tagco, Nhdd / Nhodd, Paax / Patax, Saiz / Saaiz.",what:"Work at any time you wish to transform yourself — a personality trait or weakness you no longer desire — or to transform a substance. Well-versed in alchemy, physical and spiritual: transforming the base self (lead) into a higher, refined self (gold)."},
+{purpose:"Transportation",entities:"No per-purpose name list printed in §6. §26 gives the ruling God names over the EEs of transportation: Evtpa, Ephra, Atdim, Aanaa.",what:"Safety for an upcoming journey; help getting to a place you desire; transporting objects; teaching the physics and magick behind such a feat. Astral projection to different places counts as transportation — specify to the EEs whether you mean physically or astrally."},
+{purpose:"Precious Stones / Metals",entities:"Southern sub-quadrant good Angels (per §1): Aira / Aigra, Ormn / Orpmn, Rsni / rsoni, Iznr / “Izi.nr”.",what:"Teach how to magickally work with stones and metals, their properties, how to combine them; bring specific stones or metals into your life; reveal locations of precious gems or metals."},
+{purpose:"Four Elements",entities:"Northern sub-quadrant good Angels (per §1): Opmn / Opamn, Apst / Aplst, Scio / “Sc.mio”, Vasg / Varsg.",what:"Teach connection with and more effective magic with the four elements; bring the elements in more strongly when needed. Best worked outdoors with a predominance of that element. Mastery takes weeks, months, years — not one or two callings."},
+{purpose:"Medicine / Curing",entities:"Eastern sub-quadrant good Angels (per §1): Czns / Czons, Tott / Toitt, Sias / Sigas, Fmnd / Fmond.",what:"Aid in curing specific ailments or lessening their effects; teach healing in general and how the subtle energies of healing are manipulated; herbology, homeopathy, naturopathy. SAFETY: “Always keep in mind to contact your Dr. before making any changes in what medicines you take or do not take. Just because some Enochian entity says to quit your medication does not necessarily mean it's a good idea.”"},
+{purpose:"Natural Substances",entities:"No per-purpose name list printed in §6 — derive/call via the Great Table method; ask the EEs for a specialist.",what:"Teach combining natural substances into new or magickal substances; the art of tinctures and healing concoctions; properties of substances and how they react together. Recommended if you make spell powders or incense."},
+{purpose:"Mechanical Arts",entities:"No per-purpose name list printed in §6 — derive/call via the Great Table method; ask the EEs for a specialist.",what:"Help figure out how to build new technology or better build old technology; see how mechanical devices work; architecture, engineering, building, mechanics, electronics, structural design; help repairing an item yourself."},
+{purpose:"Secret Discovery",entities:"No per-purpose name list printed in §6 — derive/call via the Great Table method; ask the EEs for a specialist.",what:"Find things not easily seen: a lost or hidden item, hidden aspects within yourself, what is secret and hidden in the universe; hidden treasure or a hidden place. “Do keep in mind to reward these particular entities well for their efforts!”"}
+];
+DATA.finderNotes="<p>§6 names these 8 purposes and describes each group's function, but does NOT print a per-purpose entity-name list. The name lists for four purposes come from §1's sub-quadrant derivation; the other four are described functionally in §6 only. No mappings were invented for them.</p><p>Working notes (§6): Evocation to ask questions and gain information; invocation to bring knowledge or a trait more strongly within yourself. With these entities, always banish or give the license to depart when the operation is finished. The directions of each element are clearly stated in Dee's diaries — face the appropriate direction if possible; in Enochian the direction seems emphasized more than the element. Sub-element order she prefers: start with Earth, then Water, Air, Fire, Spirit of Earth — from the most solid toward the more subtle.</p>";
+DATA.temple=[
+{group:"Table of Practice — the altar",items:[{name:"Table of Practice",detail:"Made of “sweet wood” — cedar, laurel, pine, cherry, apple; she recommends cedar, pine, “or whichever wood the EEs recommend.” Specs: two cubits square (2 cubits = 3 feet; cubit = 1.5 feet); legs 1 yard (3 feet) high, hollowed at the bottom so four mini SDAs may be placed within them. Border with Enochian letters 1″ wide. Ashmole's measurements of the original: top 36¼″ × 35⅞″, 7/10″ thick; legs 3″ square; frame 2′7½″ high, 2′8″ square. Engraver's-error note: the Casaubon Table is mirrored vs Sloane 3188 — flip left/right and re-orient the letters. The diary notes do NOT specify the order/placement of the ensigns on the table."}]},
+{group:"Sigil Dei Aemeth (SDA)",items:[{name:"Sigil Dei Aemeth",detail:"On top of the Table of Practice, under the altar cloth and under the skrying device. 9″ round (use a 9½″ pan; the bottom comes out 8½″ if a 9″ pan is used). Material: clarified beeswax (or sealing wax) preferred; paraffin strongly recommended against. Alternatives she has used: marble, wood, clay, stone — “some neutral substance that does not readily correlate with any one of the seven planets.” Construction ~20 hours."},{name:"Four smaller SDAs",detail:"Originals 4″ wide, to go under the table legs."}]},
+{group:"Ensigns & banners",items:[{name:"7 Ensigns of Creation",detail:"Seven seals on the table: Venus, Sol, Mars, Jupiter, Mercury, Saturn, Luna (diagrams in the book; lettering not in extractable text). Make of tin and inlay, or paint with yellow oil paint (or pure 23k gold paint; Ashmole saw blue lines and red letters). “Dee obviously chose the painted-on version.” Removable ensigns let you work a single planet; they still remain under the red-and-green flashing cloth during the working."},{name:"12 banners (mystical banners)",detail:"Around the circumference of the ritual area. Names as printed: Oro, Ibah, Aozpi, Mor, Dial, Hctga, Mph, Arsl, Gaiol, Oip, Teaa, Pdoce. Banner order as printed: ORO IBAH AOZPI, then MOR DIAL HCTGA, then OIP TEAA PDOCE, then MPH ARSL GAIOL. Note: this order (OIP before MPH) differs from the §1 listing order and “don't match up” with tablets at the four directions — “one discrepancy that no one has been able to figure out yet.” Colours not in the original diaries; she suggests the colour of the corresponding watchtower tablet. Materials: embroidery on natural fabric best; canvas + oil paint, silk-screen, painted cotton banner blanks all acceptable; poles at top for hanging."}]},
+{group:"Table, cloths & floor",items:[{name:"Great Table",detail:"The Great Table, or 5 tablets, constructed and placed prominently in the working area — as one tablet or five tablets at the corresponding quarters. Material: oak or mahogany plywood; she prefers Enochian lettering over English."},{name:"Altar cloths",detail:"Red-and-green flashing silk tablecloth over the table and SDA, with four tassels (one per corner); a white cloth (silk or linen) underneath. “It is essential that silk in particular be used.”"},{name:"Silk rug",detail:"Red silk, two yards (6 feet) square, under the table and where the operators sit. “This red carpet is left out of most descriptions of Enochian temples.”"}]},
+{group:"Skrying & personal tools",items:[{name:"Shewstone / skrying device",detail:"Magic mirror (make it yourself; ≤9″ so it does not overlap the SDA), crystal ball (quartz, beryl, obsidian), shewstone, bowl of water, or bowl of black ink. Mirror: circle of glass, black paint on the back (several coats), optional fluid condenser; wash with mugwort infusion. Charge under the Moon and/or by Achad's / Trithemius' methods. Water: distilled or from a natural stream."},{name:"Golden Talisman (optional)",detail:"Worn or used as a talisman; gold best, brass/wood/parchment or gold-leafed alternatives. Represents Kelly's vision of the four watchtowers. The commonly seen version is “considered to be backwards due to an ‘engraver's error’” — reversing it vertically and horizontally lines the colours up with Dee's notes (East red, South white, West green, North black)."}]},
+{group:"Ring, robes, book",items:[{name:"Gold Enochian Ring of Solomon",detail:"“A gold ring was required and worn by John Dee… Dee was told that he could do nothing without this ring.” Silver or stone alternatives noted."},{name:"Robes",detail:"White robes of natural fabric most likely; no robes specified in the diaries. Hooded robe recommended for skrying."},{name:"Book of Prayers",detail:"For the 19-day working; a book of silvered leaves (page edges gilded with real silver) containing your own prayers/conjurations (Dee's as guideline)."}]},
+{group:"Circle & incense",items:[{name:"Circle (usually NOT used)",detail:"Dee and Kelly did not use a circle as far as the diaries show. “I do not recommend using a circle unless specified by the EEs themselves. Instead of a circle, it is the entire room that one is blessing and purifying.” A rope circle + banners is her own tested option if interference occurs. “There is no magical sword called for in Enochian, and only a brief reference to a wand.” No incense in the original sessions; she recommends frankincense + myrrh, real rose, or Dittany of Crete."},{name:"Heptarchy seals on the floor",detail:"“Dee states that the sigils of the Heptarchy should be placed on the floor and that the magickian stand on them to represent their control over these entities.”"}]}
+];
+DATA.templeNotes="<h3>Consecration</h3><p>“As far as consecrating the Enochian temple tools or any other Enochian tool or implement, there aren't any directions whatsoever in the diary notes. I do not recommend that you use consecration methods from another system of magic besides Enochian, but instead ask the EEs what they recommend.” Options she gives: call upon the main EEs and ask them to place their hands upon the tools and consecrate them, or call upon God, the most high, or by whichever name you choose to bless and consecrate them. Judging by Dee and Kelly's methods, they likely said prayers to God and the EEs to make the temple pure, blessed, protected, with a strong EE presence. When you construct each tool, you are making it holy — be as meditative and spiritual as you can while painting and forming it; sing or say the Enochian names upon the tool as you make it. If tools are purchased, work with the tool and sing or say the names upon it several times while connecting with it. “Do not give or loan them to another person.” Do NOT use GD banishing rituals extensively before Enochian work: “you will find that the working is actually thwarted!”</p><p>Minimum if space is short: “just make the Sigil Dei Aemeth first, then the great table.” “You don't have to make all of the tools right away; you can make one at a time.” “Remember, you get out of a system what you put into it.”</p>";
+DATA.sdaLists="<h3>SDA derived name lists (§13)</h3>"+
+"<p><b>Hierarchy on the SDA:</b> eight sets of seven names. Top to bottom: the Name of God, the Angels, the seven Angels who stand before God, the daughters of light, the sons of light, the daughters of the daughters, the sons of the sons, and the archAngels. The outermost ring is the top of the hierarchy, called first; moving inwards, the hierarchy gets lower.</p>"+
+"<p><b>The 40-letter Name of God (outer ring):</b> “the greatest name of god”: <b>Gnthnmoanahollnlgnhoytoebaiannaognosaawt</b>. Uriel states it does not correlate with the well-known 42-letter name of God. Pronunciation suggestion: “G'nth-nmoanah-holl'nl'hoyt-oheba-ian-naog-nosa-aw't.”</p>"+
+"<p><b>Seven outer-ring names (planetary):</b> read clockwise from the top letter T, counting by the numbers above/below the letters (above = forward, below = backwards); a name ends at a letter without a number: <b>Thaaoth, Galaas, Gethog, Horlwn, Imon, Aaoth, Galethog</b>. Each correlates with one of the seven planets.</p>"+
+"<p><b>Heptagon names (outermost heptagon, left to right per row):</b> <b>ZllRHia, aZCaacb, paupnhr, hdmhiai, kkaaeee, iieelll, eellMG</b> (cross at the end of the last). Hebrew planetary names read vertically: Zaphkiel, Zadkiel, Cumael, Raphael, Haniel, Michael, Gabriel — order differs from the modern Kabbalistic Tree of Life.</p>"+
+"<p><b>Names inside the outermost hexagon (left to right per row):</b> <b>Saaieme, Btzkase, Heidene, Deimoa, Imegcbe, Ilaoivn, Ihrlaa</b>. Read diagonally left from top-left: planetary names <b>Sabathiel, Zedekiei, Madimie, Semelie, Nogahel, Corabil, Levanal</b> (her added planetary associations; names close to the Hebrew planet names).</p>"+
+"<p><b>Daughters of the daughters of light</b> (same table, diagonally left from top-left): <b>S, Ab, Ath, Ized, Ekiei, Madimi, Esemeli</b>. <b>Sons of the sons of light</b> (bottom-right, diagonally right): <b>E, An, Ave, Liba, Rocle, Hagonel, Ilemesse</b>. <b>Daughters of light</b> (upper-right, diagonally right): <b>E, Me, Ese, Iana, Akele, Azdobn, Stimcul</b>. <b>Sons of light</b> (bottom-left, diagonally right): <b>I, Ih, Ilr, Dmal, Heeoa, Beigia, Stimcul</b> — Stimcul is used for both a daughter and a son of light.</p>"+
+"<p>“From what I have found there isn't any information regarding the numbers found in these tables, as well as on the SDA. The only numbers which are given any mention are the ones on the very outer ring, which are included to help one derive the names.”</p>";
+DATA.program19={
+intro:"<p>The 19-day working is done near the beginning of Enochian practice if possible, but can be done at any point — best after constructing at least most of the temple furniture. It can be used as an initiation and as a short magickal retirement. After completing it, one has a much greater connection with the Angels, and skrying sessions should be greatly enhanced. She recommends redoing it every few years, or any time you have not practised Enochian for six months or longer. Minimum equipment: a skrying device and an SDA.</p><p><b>Daily structure:</b> prayers at least once a day — three times a day works better if you can manage, since the EEs specified certain prayers three times per day. At least 1–2 hours per day. Recite several prayers, construct sigils, and skry. Construct sigils for each King and Prince during the working (usable for future evocations). Two general prayers to God are highly recommended before the specific prayers. One Key per day — the EEs told her to recite each of the 19 Keys during the working, one per day. Meditation as well as prayers 3×/day if you can fit it in. “Refrain from mundane activities besides those of your job.”</p><p><b>Entity groups (HER RECOMMENDED ORDER — hypothesis, not manuscript):</b> “Do know that ALL authors who are suggesting a particular order… are only hypothesizing, including myself. There is nothing at all in the MS that even suggests which entities were to be called.” Days 1–7: Bonorum Kings and Princes, with their ministers. Days 8–11: Great Table EEs — God names, Kings, Seniors by quarter. Days 12–19: the rest of the Great Table hierarchy — servient Angels, sub-planetary EEs in charge of the elements, other EEs of the four directions. She recommends calling both sets, since it is an Enochian working, not Heptarchy-only or Great-Table-only.</p><p><b>Day-19 contact requirement:</b> “It is essential that contact is made on the 19th day, or your working will be for naught. It was stipulated in the original diaries to contact the EEs on this final day.” On the last day, call the spirits and introduce yourself — “in a way it is the 18 day working, plus one final day.” Tell the EEs you are doing the working, wish to embark on the Enochian path, desire initiation (if that is your goal), and wish them to appear when called. The working can be completed without skrying or contact, but goes much better if some skrying or contact is at least attempted. “It was said by the Angels to Dee and Kelly that they need only to be called and commanded once, then that particular group of entities would be with them for the rest of their lives. I feel the best time to ‘call them once’ is during this 19-day working.”</p><p><b>Start-day CONTRADICTION in the book — both statements as printed:</b> (a) “During the 19-day working King Carmara and Prince Hagonel are to be called first… Due to this I believe that the planetary portion of the 19-day working best be started on a Monday, and completed on a Sunday.” (b) “Don't forget to time your working so that you start with the Bonorum Kings and Princes on a Sunday.” The book does not resolve (a) vs (b). The planner below accepts any start date; the Monday reasoning is the Carmara/Hagonel-first rule.</p><p><b>Missed days:</b> “If you miss a day you have to start over… Whatever you do don't skip a day… It's not dire if you do skip a day, it just means you have to start over.” Also: “Contrary to some authors not so popular belief, no, the 19-day working does <i>not</i> bring about the apocalypse.” The book's “Athena's 19-day Working Order” page is a blank worksheet heading — no table printed.</p>",
+days:[
+{d:1,group:"Bonorum — Friday pair",key:"Key 1"},
+{d:2,group:"Bonorum — Saturday pair",key:"Key 2"},
+{d:3,group:"Bonorum — Sunday pair",key:"Key 3"},
+{d:4,group:"Bonorum — Monday pair",key:"Key 4"},
+{d:5,group:"Bonorum — Tuesday pair",key:"Key 5"},
+{d:6,group:"Bonorum — Wednesday pair",key:"Key 6"},
+{d:7,group:"Bonorum — Thursday pair",key:"Key 7"},
+{d:8,group:"Great Table — God names, Kings, Seniors (quarter 1)",key:"Key 8"},
+{d:9,group:"Great Table — God names, Kings, Seniors (quarter 2)",key:"Key 9"},
+{d:10,group:"Great Table — God names, Kings, Seniors (quarter 3)",key:"Key 10"},
+{d:11,group:"Great Table — God names, Kings, Seniors (quarter 4)",key:"Key 11"},
+{d:12,group:"Great Table — rest of hierarchy",key:"Key 12"},
+{d:13,group:"Great Table — rest of hierarchy",key:"Key 13"},
+{d:14,group:"Great Table — rest of hierarchy",key:"Key 14"},
+{d:15,group:"Great Table — rest of hierarchy",key:"Key 15"},
+{d:16,group:"Great Table — rest of hierarchy",key:"Key 16"},
+{d:17,group:"Great Table — rest of hierarchy",key:"Key 17"},
+{d:18,group:"Great Table — rest of hierarchy",key:"Key 18"},
+{d:19,group:"CONTACT DAY — call the spirits, introduce yourself; 19th Call + trip to TEX",key:"19th Call (Call of the 30 Aethyres)"}
+]};
+/* ============ RENDER: GREAT TABLE ============ */
+let gtView="english";
+function setGtView(v){gtView=v;document.querySelectorAll("#gt-view button").forEach(b=>b.classList.toggle("sel",b.dataset.view===v));renderGreatTable();}
+function gtGlyphHTML(c){
+  if(c==="·") return "·";
+  const l=c.toLowerCase();
+  if(l==="g"||l==="m"){
+    const a=DATA.alphabet.find(x=>x.eng===l.toUpperCase());
+    if(a&&a.svg) return "<svg viewBox='0 0 40 40' width='18' height='18' style='vertical-align:middle'><path d='"+a.svg+"' fill='#c9a227'/></svg>";
+  }
+  return "<span class='enoch-sm'>"+esc(l)+"</span>";
+}
+function gtCellHTML(c){
+  if(c==="·") return "·";
+  if(gtView==="english") return esc(c);
+  if(gtView==="enochian") return gtGlyphHTML(c);
+  return "<span class='gt-both'>"+gtGlyphHTML(c)+"<small>"+esc(c)+"</small></span>";
+}
+function renderGreatTable(){
+  document.getElementById("gt-layout").innerHTML="<h3>Directional layout — a labeled dispute</h3><p>"+DATA.gtLayout+"</p>";
+  const rows=DATA.greatTable.map(r=>r.split(" "));
+  let h="<table style='font-size:.78em'><tr><th></th>"+rows[0].map((_,i)=>"<th>"+(i+1)+"</th>").join("")+"</tr>";
+  rows.forEach((row,ri)=>{
+    h+="<tr><th>"+(ri+1)+"</th>"+row.map((c,ci)=>{
+      const blank=c==="·";
+      const cross=(ci===12||ri===13);
+      return "<td onclick='gtCell("+ri+","+ci+")' style='text-align:center;cursor:pointer;padding:2px 3px;"+(blank?"color:var(--mut)":"")+(cross?"background:#2a2113":"")+"'>"+gtCellHTML(c)+"</td>";
+    }).join("")+"</tr>";
+  });
+  h+="</table><div id='gt-cellinfo' class='mut'>Tap any cell for its position.</div>";
+  document.getElementById("gt-grid").innerHTML=h;
+  document.getElementById("gt-rules").innerHTML=DATA.gtRules;
+}
+function gtCell(ri,ci){
+  const v=DATA.greatTable[ri].split(" ")[ci];
+  const region=(ci===12||ri===13)?"the black / great cross":(ri<13?(ci<12?"upper-left quarter tablet":"upper-right quarter tablet"):(ci<12?"lower-left quarter tablet":"lower-right quarter tablet"));
+  document.getElementById("gt-cellinfo").innerHTML="<b>Row "+(ri+1)+", Column "+(ci+1)+"</b> — English “"+esc(v)+"” — Enochian "+gtGlyphHTML(v)+" — "+region+". Quarter tablets are named by their banner names (ORO, MOR, MPH, OIP); the book does not assign positions in the extractable text, so positions are given as upper/lower-left/right only.";
+}
+/* ============ RENDER: BONORUM ============ */
+function sealHTML(name){
+  const s=DATA.seals[name];
+  if(!s) return "<p class='mut'>Seal: not described in the transcription.</p>";
+  if(!s.svg) return "<p><b>Seal"+(s.sealName&&s.sealName!=="—"?" (“"+esc(s.sealName)+"”)":"")+":</b> "+esc(s.desc)+"</p>";
+  return "<p><b>Seal"+(s.sealName&&s.sealName!=="—"?" (“"+esc(s.sealName)+"”)":"")+":</b> "+(s.flag?"<span class='tag'>v1 approximation — needs proofread</span>":"")+"</p>"+s.svg+"<p class='mut'>"+esc(s.desc)+"</p>";
+}
+function rulerForDay(dayName){
+  const d=DATA.bonorumDays.find(x=>x.day===dayName);
+  if(!d) return "";
+  return "<p><b>"+esc(dayName)+"</b> — King <b>"+esc(d.king.name)+"</b> "+esc(d.king.aka)+" ("+esc(d.king.planet)+") &amp; Prince <b>"+esc(d.prince.name)+"</b> "+esc(d.prince.aka)+" ("+esc(d.prince.planet)+")</p>";
+}
+function renderBonorum(){
+  const q=(document.getElementById("bon-search").value||"").toLowerCase();
+  document.getElementById("bonorum-deriv").innerHTML=DATA.bonorumDeriv+
+    "<h3>The 49 names by ruling planet</h3><table><tr><th>#</th><th>Name</th><th>Planet</th><th>Day</th><th>Rank</th></tr>"+DATA.planetary49.map((r,i)=>"<tr><td>"+(i+1)+"</td><td>"+esc(r[0])+"</td><td>"+esc(r[1])+"</td><td>"+esc(r[2])+"</td><td>"+esc(r[3])+"</td></tr>").join("")+"</table><p class='mut'>"+esc(DATA.planetary49Note)+"</p>";
+  const days=DATA.bonorumDays.filter(d=>{
+    if(!q) return true;
+    return (d.day+" "+d.king.name+" "+d.prince.name+" "+d.king.planet+" "+d.prince.planet+" "+d.ministers.join(" ")).toLowerCase().includes(q);
+  });
+  document.getElementById("bonorum-list").innerHTML=days.map(d=>{
+    const kingSeal=sealHTML(d.king.name), princeSeal=sealHTML(d.prince.name);
+    return "<div class='card'><h3>"+esc(d.day)+"</h3>"+
+    "<h3>King "+esc(d.king.name)+" "+esc(d.king.aka)+" — "+esc(d.king.planet)+"</h3><p><b>Appearance:</b> "+esc(d.king.appearance)+"</p><p><b>Office:</b> "+esc(d.king.office)+"</p><p><b>When to call:</b> "+esc(d.king.attributes)+"</p>"+kingSeal+
+    "<h3>Prince "+esc(d.prince.name)+" "+esc(d.prince.aka)+" — "+esc(d.prince.planet)+"</h3><p><b>Appearance:</b> "+esc(d.prince.appearance)+"</p><p><b>Office:</b> "+esc(d.prince.office)+"</p><p><b>When to call:</b> "+esc(d.prince.attributes)+"</p>"+princeSeal+
+    "<details><summary>42 Ministers of "+esc(d.prince.name)+" (6 base names × 7 rotations)</summary><p>"+d.ministers.map(esc).join(", ")+"</p>"+(d.ministerNote?"<p class='mut'>"+esc(d.ministerNote)+"</p>":"")+"<p class='mut'>Each set of 7 ministers rules one 4-hour block: 12–4am, 4–8am, 8am–noon, noon–4pm, 4–8pm, 8pm–midnight. The 42 ministers are the servient spirits of the day's King + Prince pair.</p></details></div>";
+  }).join("") || "<p>No entries match.</p>";
+}
+/* ============ RENDER: KEYS TABLE / AETHYRES / FINDER / TEMPLE ============ */
+function renderKeysTable(){
+  document.getElementById("keys-table").innerHTML="<table><tr><th>Key</th><th>Mine (Athena)</th><th>Crowley / GD</th><th>AS</th><th>Ben Rowe</th></tr>"+DATA.keysTable.map(r=>"<tr><td>"+esc(r[0])+"</td><td>"+esc(r[1])+"</td><td>"+esc(r[2])+"</td><td>"+esc(r[3])+"</td><td>"+esc(r[4])+"</td></tr>").join("")+"</table><p class='mut'>"+esc(DATA.keysTableNote)+"</p>";
+}
+function renderAethyres(){
+  document.getElementById("aeth-rules").innerHTML=DATA.aethRules;
+  document.getElementById("aeth-list").innerHTML="<ol>"+DATA.aethyres.map((a,i)=>"<li><b>"+esc(a)+"</b>"+(i===29?" — lowest, just above our earth, contains the four elements":"")+"</li>").join("")+"</ol><p class='mut'>3 governors per Aethyre; TEX has 4, one per element.</p>";
+  document.getElementById("j-aeth").innerHTML=DATA.aethyres.map(a=>"<option>"+esc(a)+"</option>").join("");
+}
+function renderFinder(){
+  const q=(document.getElementById("finder-search").value||"").toLowerCase();
+  const rows=DATA.finder.filter(f=>(f.purpose+" "+f.entities+" "+f.what).toLowerCase().includes(q));
+  document.getElementById("finder-list").innerHTML=DATA.finderNotes+rows.map(f=>"<div class='card'><h3>"+esc(f.purpose)+"</h3><p><b>Entities:</b> "+esc(f.entities)+"</p><p>"+esc(f.what)+"</p></div>").join("") || "<p>No purposes match.</p>";
+}
+function renderTemple(){
+  const ticks=load("templeTicks",{});
+  let h="";
+  DATA.temple.forEach((g,gi)=>{
+    h+="<div class='card'><h3>"+esc(g.group)+"</h3>";
+    g.items.forEach((it,ii)=>{
+      const key=gi+"-"+ii, checked=ticks[key]?"checked":"";
+      h+="<p><label><input type='checkbox' "+checked+" onchange='tickTemple(\""+key+"\",this.checked)'> <b>"+esc(it.name)+"</b> — "+esc(it.detail)+"</label></p>";
+    });
+    h+="</div>";
+  });
+  document.getElementById("temple-list").innerHTML=h;
+  document.getElementById("temple-notes").innerHTML=DATA.templeNotes+DATA.sdaLists;
+}
+function tickTemple(k,v){ const t=load("templeTicks",{}); t[k]=v; save("templeTicks",t); }
+renderGreatTable(); renderBonorum(); renderKeysTable(); renderAethyres(); renderFinder(); renderTemple();
+/* ============ CALCULATORS, PLANNER, TRACER, JOURNAL ============ */
+const DAYNAMES=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+function initBonorumTools(){
+  const sel=document.getElementById("day-pick");
+  sel.innerHTML=DAYNAMES.map(d=>"<option>"+d+"</option>").join("");
+  const today=DAYNAMES[new Date().getDay()];
+  sel.value=today;
+  sel.onchange=()=>{ document.getElementById("day-ruler").innerHTML=rulerForDay(sel.value); };
+  document.getElementById("today-ruler").innerHTML="<p><b>Today ("+esc(today)+"):</b></p>"+rulerForDay(today);
+  document.getElementById("day-ruler").innerHTML=rulerForDay(today);
+  const d=document.getElementById("gov-date"), t=document.getElementById("gov-time");
+  const now=new Date();
+  d.value=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-"+String(now.getDate()).padStart(2,"0");
+  t.value=String(now.getHours()).padStart(2,"0")+":"+String(now.getMinutes()).padStart(2,"0");
+  const jd=document.getElementById("j-date"); if(jd) jd.value=d.value;
+}
+function calcGovernor(){
+  const ds=document.getElementById("gov-date").value, ts=document.getElementById("gov-time").value;
+  if(!ds||!ts){ document.getElementById("gov-out").innerHTML="<p>Pick a date and time.</p>"; return; }
+  const dt=new Date(ds+"T"+ts);
+  const day=DAYNAMES[dt.getDay()], hour=dt.getHours();
+  const d=DATA.bonorumDays.find(x=>x.day===day);
+  const block=Math.floor(hour/4);
+  const labels=["12–4am","4–8am","8am–noon","noon–4pm","4–8pm","8pm–midnight"];
+  const names=d.ministers.slice(block*7,block*7+7);
+  document.getElementById("gov-out").innerHTML="<p><b>"+esc(day)+", "+esc(labels[block])+"</b> — King "+esc(d.king.name)+", Prince "+esc(d.prince.name)+".</p><p><b>The 7 Ministers / Governors of this block:</b> "+names.map(esc).join(", ")+"</p><p class='mut'>Per the book (§13), all seven rule over the four-hour block together, “as opposed to each one of the seven ruling over 34 minutes.” The Governors are derived by rotating the minister names: take a minister's name and move all letters forward one space. Worked example (Friday): Aoaynnl → Aoaynnl, Oaynnla, Aynnlao, Ynnlaoa, Nnlaoay, Nlaoayn, Laoayn. (§8 prints the base name “Aoainnl”; §13 prints “Aoaynnl” — both as printed.) To work with a Governor: first contact the King, then the Prince, then the Minister of that day.</p>";
+}
+/* ---- 19-day planner ---- */
+function plan19(){
+  const s=document.getElementById("w19-start").value;
+  if(!s){ document.getElementById("w19-plan").innerHTML="<p>Pick a start date.</p>"; return; }
+  save("plan19Start",s);
+  renderPlan19();
+}
+function renderPlan19(){
+  const s=load("plan19Start",null);
+  if(!s){ document.getElementById("w19-plan").innerHTML="<p class='mut'>"+DATA.program19.intro+"</p>"; return; }
+  const done=load("plan19Done",{});
+  const start=new Date(s+"T12:00:00");
+  let h="<p class='mut'>"+DATA.program19.intro+"</p><p><b>Start:</b> "+esc(s)+"</p><table><tr><th>Day</th><th>Date</th><th>Key</th><th>Entity group</th><th>Done</th></tr>";
+  DATA.program19.days.forEach(d=>{
+    const dt=new Date(start.getTime()+(d.d-1)*86400000);
+    const ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
+    const ck=done[d.d]?"checked":"";
+    h+="<tr><td>"+d.d+"</td><td>"+ds+" ("+DAYNAMES[dt.getDay()]+")</td><td>"+esc(d.key)+"</td><td>"+esc(d.group)+"</td><td><input type='checkbox' "+ck+" onchange='tick19("+d.d+",this.checked)'></td></tr>";
+  });
+  h+="</table><p class='mut'>One Key per day; Day 19 is the contact day. If you miss a day, the book says start over.</p>";
+  document.getElementById("w19-plan").innerHTML=h;
+}
+function tick19(d,v){ const t=load("plan19Done",{}); t[d]=v; save("plan19Done",t); }
+/* ---- Sigil tracer (Great Table, first-occurrence positions) ---- */
+function letterPos(){
+  if(letterPos.cache) return letterPos.cache;
+  const map={};
+  DATA.greatTable.forEach((row,ri)=>{
+    row.split(" ").forEach((c,ci)=>{
+      const k=c.toLowerCase();
+      if(k==="·") return;
+      if(!(k in map)) map[k]=[ri,ci];
+    });
+  });
+  letterPos.cache=map; return map;
+}
+function traceSigil(){
+  const word=(document.getElementById("sig-word").value||"").toLowerCase().replace(/[^a-z]/g,"");
+  const out=document.getElementById("sig-out");
+  const cv=document.getElementById("sig-canvas");
+  const ctx=cv.getContext("2d");
+  ctx.clearRect(0,0,cv.width,cv.height);
+  if(!word){ out.textContent="Type a word first."; return; }
+  const map=letterPos();
+  const pts=[], missing=[];
+  for(const ch of word){
+    let L=ch; if(L==="y") L="i"; // book: i and y are the same letter in Enochian
+    if(map[L]) pts.push({ch:ch,pos:map[L]});
+    else missing.push(ch);
+  }
+  // faint grid
+  ctx.strokeStyle="#241c0e"; ctx.lineWidth=1;
+  for(let i=0;i<=25;i++){ ctx.beginPath(); ctx.moveTo(i*cv.width/25,0); ctx.lineTo(i*cv.width/25,cv.height); ctx.stroke(); }
+  for(let j=0;j<=27;j++){ ctx.beginPath(); ctx.moveTo(0,j*cv.height/27); ctx.lineTo(cv.width,j*cv.height/27); ctx.stroke(); }
+  if(pts.length){
+    ctx.strokeStyle="#c9a227"; ctx.lineWidth=2; ctx.beginPath();
+    pts.forEach((p,i)=>{
+      const x=(p.pos[1]+0.5)*cv.width/25, y=(p.pos[0]+0.5)*cv.height/27;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+    // start circle
+    const f=pts[0], fx=(f.pos[1]+0.5)*cv.width/25, fy=(f.pos[0]+0.5)*cv.height/27;
+    ctx.beginPath(); ctx.arc(fx,fy,6,0,7); ctx.stroke();
+    // end tick
+    const l=pts[pts.length-1], lx=(l.pos[1]+0.5)*cv.width/25, ly=(l.pos[0]+0.5)*cv.height/27;
+    ctx.beginPath(); ctx.moveTo(lx-6,ly-6); ctx.lineTo(lx+6,ly+6); ctx.stroke();
+    ctx.fillStyle="#e8ddc0"; ctx.font="12px Georgia";
+    pts.forEach(p=>{
+      const x=(p.pos[1]+0.5)*cv.width/25, y=(p.pos[0]+0.5)*cv.height/27;
+      ctx.fillText(p.ch.toUpperCase(),x+7,y-7);
+    });
+  }
+  out.innerHTML="<p><b>Word:</b> "+esc(word)+" — <b>traced letters:</b> "+pts.map(p=>esc(p.ch.toUpperCase())+" (row "+(p.pos[0]+1)+", col "+(p.pos[1]+1)+")").join(", ")+"</p>"+
+  (missing.length?"<p><b>Not found on the Great Table:</b> "+missing.map(esc).join(", ").toUpperCase()+" — the tracer skips them; check the book's method for handling.</p>":"")+
+  "<p class='mut'>Method (§14, her method — not in the original diaries): pick the tablet for the purpose; write the word (no negatives — e.g. not “no cancer”); find the first letter, draw a small circle; draw lines letter to letter; draw a small line at the end. The letters are traced at their FIRST occurrence on the Table. “i” is used for “y” (same letter in Enochian). To check the design, call upon the God names of that section of the table and run it by them. Draw the finished sigil on paper, metal, parchment, wood, or stone — natural materials preferred.</p>";
+}
+/* ---- Aethyre travel journal ---- */
+function saveJournal(){
+  const a=document.getElementById("j-aeth").value, d=document.getElementById("j-date").value, n=document.getElementById("j-notes").value;
+  if(!d){ alert("Pick a date."); return; }
+  const j=load("aethJournal",[]); j.unshift({a:a,d:d,n:n}); save("aethJournal",j);
+  document.getElementById("j-notes").value="";
+  renderJournal();
+}
+function renderJournal(){
+  const j=load("aethJournal",[]);
+  document.getElementById("j-list").innerHTML=j.length?j.map((e,i)=>"<div class='card'><p><b>"+esc(e.a)+"</b> — "+esc(e.d)+"</p><p>"+esc(e.n)+"</p><button class='action' onclick='delJournal("+i+")'>Delete</button></div>").join(""):"<p class='mut'>No entries yet.</p>";
+}
+function delJournal(i){ const j=load("aethJournal",[]); j.splice(i,1); save("aethJournal",j); renderJournal(); }
+initBonorumTools();
+renderPlan19();
+renderJournal();
+</script>
+</body>
+</html>
