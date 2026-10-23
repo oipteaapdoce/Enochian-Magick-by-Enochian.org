@@ -807,7 +807,8 @@ function renderFinder(){
   if(words.length){
     rows=rows.map(f=>{const hay=(f.purpose+" "+(f.keys||"")+" "+f.entities+" "+f.what).toLowerCase();const score=words.reduce((n,w)=>n+(hay.includes(w)?1:0),0);return{f:f,score:score};}).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).map(x=>x.f);
   }
-  document.getElementById("finder-list").innerHTML=DATA.finderNotes+(rows.length?rows.map(f=>"<div class='card'><h3>"+esc(f.purpose)+"</h3><p><b>Entities:</b> "+esc(f.entities)+"</p><p>"+esc(f.what)+"</p></div>").join(""):"<p>No purposes match that search. The Finder covers the eight purposes from the book: transformation, transportation, precious stones and metals, the four elements, medicine and curing, natural substances, mechanical arts, and secret discovery.</p>");
+  const cards=rows.length?rows.map(f=>"<div class='card'><h3>"+esc(f.purpose)+"</h3><p><b>Entities:</b> "+esc(f.entities)+"</p><p>"+esc(f.what)+"</p></div>").join(""):"<p>No purposes match that search. The Finder covers the eight purposes from the book: transformation, transportation, precious stones and metals, the four elements, medicine and curing, natural substances, mechanical arts, and secret discovery.</p>";
+  document.getElementById("finder-list").innerHTML=words.length?cards:DATA.finderNotes+cards;
 }
 function renderTemple(){
   const ticks=load("templeTicks",{});
