@@ -1,4 +1,4 @@
-const CACHE = 'enochian-v1';
+const CACHE = 'enochian-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -27,7 +27,23 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const accept = event.request.headers.get('accept') || '';
+  const isDoc = event.request.mode === 'navigate' || accept.includes('text/html');
+  if (isDoc) {
+    // Network first for the app page itself, so updates always land; cache is the offline fallback.
+    event.respondWith(
+      fetch(event.request)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((cache) => cache.put(event.request, copy));
+          return res;
+        })
+        .catch(() => caches.match(event.request, { ignoreSearch: true }))
+    );
+    return;
+  }
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request, { ignoreSearch: true }).then((cached) => cached || fetch(event.request))
   );
 });
